@@ -18,39 +18,38 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.ForgeAdvancementProvider;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-@Mod.EventBusSubscriber(modid = References.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = References.ID, bus = EventBusSubscriber.Bus.MOD)
 public class DataGenerators {
 
-	@SubscribeEvent
-	public static void gatherData(GatherDataEvent event) {
+    @SubscribeEvent
+    public static void gatherData(GatherDataEvent event) {
 
-		DataGenerator generator = event.getGenerator();
+        DataGenerator generator = event.getGenerator();
 
-		PackOutput output = generator.getPackOutput();
+        PackOutput output = generator.getPackOutput();
 
-		ExistingFileHelper helper = event.getExistingFileHelper();
+        ExistingFileHelper helper = event.getExistingFileHelper();
 
-		CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-		if (event.includeServer()) {
+        if (event.includeServer()) {
 
-			generator.addProvider(true, new LootTableProvider(output, Collections.emptySet(), List.of(new LootTableProvider.SubProviderEntry(AssemblyLineLootTablesProvider::new, LootContextParamSets.BLOCK))));
-			generator.addProvider(true, new AssemblyLineRecipeProvider(output));
-			generator.addProvider(true, new ForgeAdvancementProvider(output, event.getLookupProvider(), helper, List.of(new AssemblyLineAdvancementProvider())));
-			generator.addProvider(true, new AssemblyLineBlockTagsProvider(output, lookupProvider, helper));
+            generator.addProvider(true, new LootTableProvider(output, Collections.emptySet(), List.of(new LootTableProvider.SubProviderEntry(AssemblyLineLootTablesProvider::new, LootContextParamSets.BLOCK)), lookupProvider));
+            generator.addProvider(true, new AssemblyLineRecipeProvider(output, lookupProvider));
+            generator.addProvider(true, new AssemblyLineAdvancementProvider(output, lookupProvider));
+            generator.addProvider(true, new AssemblyLineBlockTagsProvider(output, lookupProvider, helper));
 
-		}
-		if (event.includeClient()) {
-			generator.addProvider(true, new AssemblyLineBlockStateProvider(output, helper));
-			generator.addProvider(true, new AssemblyLineItemModelsProvider(output, helper));
-			generator.addProvider(true, new AssemblyLineLangKeyProvider(output, Locale.EN_US));
-		}
-	}
+        }
+        if (event.includeClient()) {
+            generator.addProvider(true, new AssemblyLineBlockStateProvider(output, helper));
+            generator.addProvider(true, new AssemblyLineItemModelsProvider(output, helper));
+            generator.addProvider(true, new AssemblyLineLangKeyProvider(output, Locale.EN_US));
+        }
+    }
 
 }

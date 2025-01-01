@@ -1,48 +1,37 @@
 package assemblyline.registers;
 
-import static assemblyline.registers.AssemblyLineBlocks.blockAutocrafter;
-import static assemblyline.registers.AssemblyLineBlocks.blockBlockBreaker;
-import static assemblyline.registers.AssemblyLineBlocks.blockBlockPlacer;
-import static assemblyline.registers.AssemblyLineBlocks.blockConveyorBelt;
-import static assemblyline.registers.AssemblyLineBlocks.blockCrate;
-import static assemblyline.registers.AssemblyLineBlocks.blockCrateLarge;
-import static assemblyline.registers.AssemblyLineBlocks.blockCrateMedium;
-import static assemblyline.registers.AssemblyLineBlocks.blockDetector;
-import static assemblyline.registers.AssemblyLineBlocks.blockFarmer;
-import static assemblyline.registers.AssemblyLineBlocks.blockMobGrinder;
-import static assemblyline.registers.AssemblyLineBlocks.blockRancher;
-import static assemblyline.registers.AssemblyLineBlocks.blockSorterBelt;
-
+import assemblyline.common.block.subtype.SubtypeAssemblyMachine;
 import assemblyline.prefab.utils.AssemblyTextUtils;
 import electrodynamics.common.blockitem.types.BlockItemDescriptable;
 import electrodynamics.prefab.utilities.ElectroTextUtils;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.neoforged.bus.api.IEventBus;
 
 public class UnifiedAssemblyLineRegister {
 
 	static {
 
 		// MACHINES
-		BlockItemDescriptable.addDescription(() -> blockConveyorBelt, ElectroTextUtils.voltageTooltip(120));
-		BlockItemDescriptable.addDescription(() -> blockSorterBelt, ElectroTextUtils.voltageTooltip(120));
-		BlockItemDescriptable.addDescription(() -> blockAutocrafter, ElectroTextUtils.voltageTooltip(120));
-		BlockItemDescriptable.addDescription(() -> blockBlockPlacer, ElectroTextUtils.voltageTooltip(120));
-		BlockItemDescriptable.addDescription(() -> blockBlockBreaker, ElectroTextUtils.voltageTooltip(120));
-		BlockItemDescriptable.addDescription(() -> blockRancher, ElectroTextUtils.voltageTooltip(120));
-		BlockItemDescriptable.addDescription(() -> blockMobGrinder, ElectroTextUtils.voltageTooltip(120));
-		BlockItemDescriptable.addDescription(() -> blockFarmer, ElectroTextUtils.voltageTooltip(120));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCK_CONVEYORBELT, ElectroTextUtils.voltageTooltip(120));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCK_SORTERBELT, ElectroTextUtils.voltageTooltip(120));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.autocrafter), ElectroTextUtils.voltageTooltip(120));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.blockplacer), ElectroTextUtils.voltageTooltip(120));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.blockbreaker), ElectroTextUtils.voltageTooltip(120));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.rancher), ElectroTextUtils.voltageTooltip(120));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.mobgrinder), ElectroTextUtils.voltageTooltip(120));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.farmer), ElectroTextUtils.voltageTooltip(120));
 
 		// Misc
-		BlockItemDescriptable.addDescription(() -> blockDetector, AssemblyTextUtils.tooltip("detector"));
-		BlockItemDescriptable.addDescription(() -> blockCrate, AssemblyTextUtils.tooltip("crate"));
-		BlockItemDescriptable.addDescription(() -> blockCrateMedium, AssemblyTextUtils.tooltip("cratemedium"));
-		BlockItemDescriptable.addDescription(() -> blockCrateLarge, AssemblyTextUtils.tooltip("cratelarge"));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCK_DETECTOR, AssemblyTextUtils.tooltip("detector"));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.crate), AssemblyTextUtils.tooltip("crate"));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.cratemedium), AssemblyTextUtils.tooltip("cratemedium"));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.cratelarge), AssemblyTextUtils.tooltip("cratelarge"));
 	}
 
 	public static void register(IEventBus bus) {
+		AssemblyLineAttachmentTypes.ATTACHMENT_TYPES.register(bus);
 		AssemblyLineBlocks.BLOCKS.register(bus);
 		AssemblyLineItems.ITEMS.register(bus);
-		AssemblyLineBlockTypes.BLOCK_ENTITY_TYPES.register(bus);
+		AssemblyLineTiles.BLOCK_ENTITY_TYPES.register(bus);
 		AssemblyLineMenuTypes.MENU_TYPES.register(bus);
 		AssemblyLineCreativeTabs.CREATIVE_TABS.register(bus);
 	}

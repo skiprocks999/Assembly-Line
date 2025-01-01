@@ -1,10 +1,11 @@
 package assemblyline.datagen.client;
 
 import assemblyline.References;
+import assemblyline.common.block.subtype.SubtypeAssemblyMachine;
 import assemblyline.registers.AssemblyLineBlocks;
 import electrodynamics.datagen.client.ElectrodynamicsItemModelsProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class AssemblyLineItemModelsProvider extends ElectrodynamicsItemModelsProvider {
 
@@ -15,8 +16,8 @@ public class AssemblyLineItemModelsProvider extends ElectrodynamicsItemModelsPro
 	@Override
 	protected void registerModels() {
 
-		simpleBlockItem(AssemblyLineBlocks.blockBlockBreaker, existingBlock(blockLoc("blockbreaker")));
-		simpleBlockItem(AssemblyLineBlocks.blockMobGrinder, existingBlock(blockLoc("mobgrinder")));
+		simpleBlockItem(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getValue(SubtypeAssemblyMachine.blockbreaker), existingBlock(blockLoc("blockbreaker")));
+		simpleBlockItem(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getValue(SubtypeAssemblyMachine.mobgrinder), existingBlock(blockLoc("mobgrinder")));
 
 	}
 

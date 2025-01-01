@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "c:chests"
+    },
+    "M": {
+      "item": "assemblyline:cratemedium"
+    }
+  },
+  "pattern": [
+    "MCM"
+  ],
+  "result": {
+    "count": 1,
+    "id": "assemblyline:cratelarge"
+  }
+}

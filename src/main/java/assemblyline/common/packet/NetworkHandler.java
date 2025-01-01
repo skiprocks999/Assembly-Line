@@ -1,23 +1,28 @@
 package assemblyline.common.packet;
 
-import java.util.HashMap;
-import java.util.Optional;
-
 import assemblyline.References;
-import assemblyline.common.packet.types.PacketFarmer;
+import assemblyline.common.packet.types.server.PacketFarmer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+@EventBusSubscriber(modid = References.ID, bus = EventBusSubscriber.Bus.MOD)
 public class NetworkHandler {
 
-	public static HashMap<String, String> playerInformation = new HashMap<>();
 	private static final String PROTOCOL_VERSION = "1";
-	private static int disc = 0;
-	public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(References.ID, "main"), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
 
-	public static void init() {
-		CHANNEL.registerMessage(disc++, PacketFarmer.class, PacketFarmer::encode, PacketFarmer::decode, PacketFarmer::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+	@SubscribeEvent
+	public static void registerPackets(final RegisterPayloadHandlersEvent event) {
+		final PayloadRegistrar registry = event.registrar(electrodynamics.api.References.ID).versioned(PROTOCOL_VERSION).optional();
+
+		// SERVER
+		registry.playToServer(PacketFarmer.TYPE, PacketFarmer.CODEC, PacketFarmer::handle);
+
+	}
+
+	public static ResourceLocation id(String name) {
+		return ResourceLocation.fromNamespaceAndPath(References.ID, name);
 	}
 }

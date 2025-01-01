@@ -1,25 +1,24 @@
 package assemblyline.datagen.server.recipe.vanilla;
 
-import java.util.function.Consumer;
-
 import assemblyline.References;
-import assemblyline.registers.AssemblyLineBlocks;
+import assemblyline.common.block.subtype.SubtypeAssemblyMachine;
+import assemblyline.registers.AssemblyLineItems;
 import electrodynamics.common.block.subtype.SubtypeWire;
 import electrodynamics.common.tags.ElectrodynamicsTags;
 import electrodynamics.datagen.utils.recipe.AbstractRecipeGenerator;
-import electrodynamics.datagen.utils.recipe.ElectrodynamicsShapedCraftingRecipe;
+import electrodynamics.datagen.utils.recipe.ShapedCraftingRecipeBuilder;
 import electrodynamics.registers.ElectrodynamicsItems;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 
 	@Override
-	public void addRecipes(Consumer<FinishedRecipe> consumer) {
+	public void addRecipes(RecipeOutput output) {
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockCrate.asItem(), 1)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.crate), 1)
 				//
 				.addPattern("IBI")
 				//
@@ -33,35 +32,35 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addKey('C', Tags.Items.CHESTS)
 				//
-				.complete(References.ID, "crate_small", consumer);
+				.complete(References.ID, "crate_small", output);
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockCrateMedium.asItem(), 1)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.cratemedium), 1)
 				//
 				.addPattern("SCS")
 				//
-				.addKey('S', AssemblyLineBlocks.blockCrate.asItem())
+				.addKey('S', AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.crate))
 				//
 				.addKey('C', Tags.Items.CHESTS)
 				//
-				.complete(References.ID, "crate_medium", consumer);
+				.complete(References.ID, "crate_medium", output);
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockCrateLarge.asItem(), 1)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.cratelarge), 1)
 				//
 				.addPattern("MCM")
 				//
-				.addKey('M', AssemblyLineBlocks.blockCrateMedium.asItem())
+				.addKey('M', AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.cratemedium))
 				//
 				.addKey('C', Tags.Items.CHESTS)
 				//
-				.complete(References.ID, "crate_large", consumer);
+				.complete(References.ID, "crate_large", output);
 
-		addMachines(consumer);
+		addMachines(output);
 
 	}
 
-	public void addMachines(Consumer<FinishedRecipe> consumer) {
+	public void addMachines(RecipeOutput output) {
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockAutocrafter.asItem(), 1)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.autocrafter), 1)
 				//
 				.addPattern("GBG")
 				//
@@ -79,11 +78,11 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addKey('P', Items.PISTON)
 				//
-				.addKey('W', ElectrodynamicsItems.getItem(SubtypeWire.copper))
+				.addKey('W', ElectrodynamicsItems.ITEMS_WIRE.getValue(SubtypeWire.copper))
 				//
-				.complete(References.ID, "autocrafter", consumer);
+				.complete(References.ID, "autocrafter", output);
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockConveyorBelt.asItem(), 12)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEM_CONVEYORBELT.get(), 12)
 				//
 				.addPattern("SSS")
 				//
@@ -95,9 +94,9 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addKey('M', ElectrodynamicsItems.ITEM_MOTOR.get())
 				//
-				.complete(References.ID, "conveyorbelt", consumer);
+				.complete(References.ID, "conveyorbelt", output);
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockBlockBreaker.asItem(), 1)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.blockbreaker), 1)
 				//
 				.addPattern("CPC")
 				//
@@ -105,7 +104,7 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addPattern("CMC")
 				//
-				.addKey('C', Tags.Items.COBBLESTONE)
+				.addKey('C', Tags.Items.COBBLESTONES)
 				//
 				.addKey('P', Items.IRON_PICKAXE)
 				//
@@ -113,9 +112,9 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addKey('M', ElectrodynamicsItems.ITEM_MOTOR.get())
 				//
-				.complete(References.ID, "blockbreaker", consumer);
+				.complete(References.ID, "blockbreaker", output);
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockBlockPlacer.asItem(), 1)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.blockplacer), 1)
 				//
 				.addPattern("CPC")
 				//
@@ -123,7 +122,7 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addPattern("CMC")
 				//
-				.addKey('C', Tags.Items.COBBLESTONE)
+				.addKey('C', Tags.Items.COBBLESTONES)
 				//
 				.addKey('P', Items.PISTON)
 				//
@@ -131,9 +130,9 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addKey('M', ElectrodynamicsItems.ITEM_MOTOR.get())
 				//
-				.complete(References.ID, "blockplacer", consumer);
+				.complete(References.ID, "blockplacer", output);
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockDetector.asItem(), 1)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEM_DETECTOR.get(), 1)
 				//
 				.addPattern("IEI")
 				//
@@ -147,9 +146,9 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addKey('C', ElectrodynamicsTags.Items.CIRCUITS_BASIC)
 				//
-				.complete(References.ID, "detector", consumer);
+				.complete(References.ID, "detector", output);
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockFarmer.asItem(), 1)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.farmer), 1)
 				//
 				.addPattern("PSP")
 				//
@@ -169,9 +168,9 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addKey('W', ElectrodynamicsTags.Items.INSULATED_COPPER_WIRES)
 				//
-				.complete(References.ID, "farmer", consumer);
+				.complete(References.ID, "farmer", output);
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockMobGrinder.asItem(), 1)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.mobgrinder), 1)
 				//
 				.addPattern("PSP")
 				//
@@ -187,9 +186,9 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addKey('W', ElectrodynamicsTags.Items.INSULATED_COPPER_WIRES)
 				//
-				.complete(References.ID, "mobgrinder", consumer);
+				.complete(References.ID, "mobgrinder", output);
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockRancher.asItem(), 1)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.rancher), 1)
 				//
 				.addPattern("PSP")
 				//
@@ -205,9 +204,9 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addKey('W', ElectrodynamicsTags.Items.INSULATED_COPPER_WIRES)
 				//
-				.complete(References.ID, "rancher", consumer);
+				.complete(References.ID, "rancher", output);
 
-		ElectrodynamicsShapedCraftingRecipe.start(AssemblyLineBlocks.blockSorterBelt.asItem(), 1)
+		ShapedCraftingRecipeBuilder.start(AssemblyLineItems.ITEM_SORTERBELT.get(), 1)
 				//
 				.addPattern("WWW")
 				//
@@ -217,9 +216,9 @@ public class AssemblyLineCraftingTableRecipes extends AbstractRecipeGenerator {
 				//
 				.addKey('H', Items.HOPPER)
 				//
-				.addKey('C', AssemblyLineBlocks.blockConveyorBelt.asItem())
+				.addKey('C', AssemblyLineItems.ITEM_CONVEYORBELT.get())
 				//
-				.complete(References.ID, "sorterbelt", consumer);
+				.complete(References.ID, "sorterbelt", output);
 
 	}
 

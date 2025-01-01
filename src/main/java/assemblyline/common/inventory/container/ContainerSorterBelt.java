@@ -1,9 +1,9 @@
 package assemblyline.common.inventory.container;
 
-import assemblyline.common.tile.TileSorterBelt;
+import assemblyline.common.tile.belt.TileSorterBelt;
 import assemblyline.registers.AssemblyLineMenuTypes;
-import electrodynamics.prefab.inventory.container.GenericContainerBlockEntity;
 import electrodynamics.prefab.inventory.container.slot.item.SlotGeneric;
+import electrodynamics.prefab.inventory.container.types.GenericContainerBlockEntity;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,11 +13,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 public class ContainerSorterBelt extends GenericContainerBlockEntity<TileSorterBelt> {
 
 	public ContainerSorterBelt(int id, Inventory playerinv) {
-		this(id, playerinv, new SimpleContainer(18));
-	}
-
-	public ContainerSorterBelt(int id, Inventory playerinv, Container inventory) {
-		this(id, playerinv, inventory, new SimpleContainerData(3));
+		this(id, playerinv, new SimpleContainer(18), new SimpleContainerData(3));
 	}
 
 	public ContainerSorterBelt(int id, Inventory playerinv, Container inventory, ContainerData inventorydata) {

@@ -1,10 +1,11 @@
 package assemblyline.common.inventory.container;
 
-import assemblyline.common.inventory.container.generic.AbstractHarvesterContainer;
+import assemblyline.common.tile.TileBlockPlacer;
 import assemblyline.registers.AssemblyLineMenuTypes;
 import electrodynamics.common.item.subtype.SubtypeItemUpgrade;
 import electrodynamics.prefab.inventory.container.slot.item.SlotGeneric;
 import electrodynamics.prefab.inventory.container.slot.item.type.SlotUpgrade;
+import electrodynamics.prefab.inventory.container.types.GenericContainerBlockEntity;
 import electrodynamics.prefab.utilities.math.Color;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -12,7 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 
-public class ContainerBlockPlacer extends AbstractHarvesterContainer {
+public class ContainerBlockPlacer extends GenericContainerBlockEntity<TileBlockPlacer> {
 
 	public static final SubtypeItemUpgrade[] VALID_UPGRADES = new SubtypeItemUpgrade[] { SubtypeItemUpgrade.iteminput };
 

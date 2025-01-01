@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:circuits/basic"
+    },
+    "C": {
+      "tag": "c:chests"
+    },
+    "G": {
+      "tag": "c:gears/steel"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "T": {
+      "item": "minecraft:crafting_table"
+    },
+    "W": {
+      "item": "electrodynamics:wirecopper"
+    }
+  },
+  "pattern": [
+    "GBG",
+    "CTC",
+    "PWP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "assemblyline:autocrafter"
+  }
+}

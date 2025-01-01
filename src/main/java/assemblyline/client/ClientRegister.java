@@ -8,30 +8,72 @@ import assemblyline.client.render.tile.RenderCrate;
 import assemblyline.client.render.tile.RenderFarmer;
 import assemblyline.client.render.tile.RenderMobGrinder;
 import assemblyline.client.render.tile.RenderRancher;
-import assemblyline.client.screen.ScreenAutocrafter;
-import assemblyline.client.screen.ScreenBlockBreaker;
-import assemblyline.client.screen.ScreenBlockPlacer;
-import assemblyline.client.screen.ScreenFarmer;
-import assemblyline.client.screen.ScreenFrontHarvester;
-import assemblyline.client.screen.ScreenSorterBelt;
-import assemblyline.registers.AssemblyLineBlockTypes;
+import assemblyline.client.screen.*;
+import assemblyline.registers.AssemblyLineTiles;
 import assemblyline.registers.AssemblyLineMenuTypes;
 import electrodynamics.client.guidebook.ScreenGuidebook;
-import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelEvent.RegisterAdditional;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = References.ID, bus = Bus.MOD, value = { Dist.CLIENT })
+@EventBusSubscriber(modid = References.ID, bus = EventBusSubscriber.Bus.MOD, value = { Dist.CLIENT })
 public class ClientRegister {
+
+	public static final ModelResourceLocation MODEL_CONVEYOR = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbelt"));
+	public static final ModelResourceLocation MODEL_CONVEYORCLEAR =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltclear"));
+	public static final ModelResourceLocation MODEL_CONVEYORRIGHTCLEAR =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltrightclear"));
+	public static final ModelResourceLocation MODEL_CONVEYORLEFTCLEAR =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltleftclear"));
+	public static final ModelResourceLocation MODEL_CONVEYORANIMATED =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltrunning"));
+	public static final ModelResourceLocation MODEL_CONVEYORANIMATEDCLEAR =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltrunningclear"));
+	public static final ModelResourceLocation MODEL_CONVEYORANIMATEDRIGHTCLEAR =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltrunningrightclear"));
+	public static final ModelResourceLocation MODEL_CONVEYORANIMATEDLEFTCLEAR =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltrunningleftclear"));
+	public static final ModelResourceLocation MODEL_SLOPEDCONVEYOR =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltsloped"));
+	public static final ModelResourceLocation MODEL_SLOPEDCONVEYORANIMATED =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltslopedrunning"));
+	public static final ModelResourceLocation MODEL_SLOPEDCONVEYORUP =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltslopedup"));
+	public static final ModelResourceLocation MODEL_SLOPEDCONVEYORUPANIMATED =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltslopeduprunning"));
+	public static final ModelResourceLocation MODEL_SLOPEDCONVEYORDOWN =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltslopeddown"));
+	public static final ModelResourceLocation MODEL_SLOPEDCONVEYORDOWNANIMATED =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltslopeddownrunning"));
+	public static final ModelResourceLocation MODEL_MANIPULATORINPUT =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/manipulatorinput"));
+	public static final ModelResourceLocation MODEL_MANIPULATORINPUTRUNNING =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/manipulatorinputrunning"));
+	public static final ModelResourceLocation MODEL_MANIPULATOROUTPUT =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/manipulatoroutput"));
+	public static final ModelResourceLocation MODEL_MANIPULATOROUTPUTRUNNING =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/manipulatoroutputrunning"));
+	public static final ModelResourceLocation MODEL_ELEVATOR =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/elevatorbelt"));
+	public static final ModelResourceLocation MODEL_ELEVATORRUNNING =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/elevatorbeltrunning"));
+	public static final ModelResourceLocation MODEL_ELEVATORBOTTOM =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/elevatorbeltbottom"));
+	public static final ModelResourceLocation MODEL_ELEVATORBOTTOMRUNNING =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/elevatorbeltbottomrunning"));
+	public static final ModelResourceLocation MODEL_MANIPULATOR =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/manipulator"));
+	public static final ModelResourceLocation MODEL_BLOCKBREAKERWHEEL =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/blockbreakerwheel"));
+	public static final ModelResourceLocation MODEL_MOBGRINDERSIDEWHEEL =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/mobgrindersidewheel"));
+	public static final ModelResourceLocation MODEL_MOBGRINDERCENTERWHEEL =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/mobgrindercenterwheel"));
+	public static final ModelResourceLocation MODEL_RANCHERLEFT =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/rancherleft"));
+	public static final ModelResourceLocation MODEL_RANCHERRIGHT =ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/rancherright"));
+
+	public static void setup() {
+		ClientEvents.init();
+
+		ScreenGuidebook.addGuidebookModule(new ModuleAssemblyLine());
+	}
+
 	@SubscribeEvent
-	public static void onModelEvent(RegisterAdditional event) {
+	public static void registerMenus(RegisterMenuScreensEvent event) {
+		event.register(AssemblyLineMenuTypes.CONTAINER_SORTERBELT.get(), ScreenSorterBelt::new);
+		event.register(AssemblyLineMenuTypes.CONTAINER_AUTOCRAFTER.get(), ScreenAutocrafter::new);
+		event.register(AssemblyLineMenuTypes.CONTAINER_BLOCKPLACER.get(), ScreenBlockPlacer::new);
+		event.register(AssemblyLineMenuTypes.CONTAINER_BLOCKBREAKER.get(), ScreenBlockBreaker::new);
+		event.register(AssemblyLineMenuTypes.CONTAINER_MOBGRINDER.get(), ScreenMobGrinder::new);
+		event.register(AssemblyLineMenuTypes.CONTAINER_RANCHER.get(), ScreenRancher::new);
+		event.register(AssemblyLineMenuTypes.CONTAINER_FARMER.get(), ScreenFarmer::new);
+	}
+
+	@SubscribeEvent
+	public static void onModelEvent(ModelEvent.RegisterAdditional event) {
 		event.register(MODEL_CONVEYOR);
 		event.register(MODEL_CONVEYORCLEAR);
 		event.register(MODEL_CONVEYORRIGHTCLEAR);
@@ -62,55 +104,13 @@ public class ClientRegister {
 		event.register(MODEL_RANCHERRIGHT);
 	}
 
-	public static final ResourceLocation MODEL_CONVEYOR = new ResourceLocation(References.ID + ":block/conveyorbelt");
-	public static final ResourceLocation MODEL_CONVEYORCLEAR = new ResourceLocation(References.ID + ":block/conveyorbeltclear");
-	public static final ResourceLocation MODEL_CONVEYORRIGHTCLEAR = new ResourceLocation(References.ID + ":block/conveyorbeltrightclear");
-	public static final ResourceLocation MODEL_CONVEYORLEFTCLEAR = new ResourceLocation(References.ID + ":block/conveyorbeltleftclear");
-	public static final ResourceLocation MODEL_CONVEYORANIMATED = new ResourceLocation(References.ID + ":block/conveyorbeltrunning");
-	public static final ResourceLocation MODEL_CONVEYORANIMATEDCLEAR = new ResourceLocation(References.ID + ":block/conveyorbeltrunningclear");
-	public static final ResourceLocation MODEL_CONVEYORANIMATEDRIGHTCLEAR = new ResourceLocation(References.ID + ":block/conveyorbeltrunningrightclear");
-	public static final ResourceLocation MODEL_CONVEYORANIMATEDLEFTCLEAR = new ResourceLocation(References.ID + ":block/conveyorbeltrunningleftclear");
-	public static final ResourceLocation MODEL_SLOPEDCONVEYOR = new ResourceLocation(References.ID + ":block/conveyorbeltsloped");
-	public static final ResourceLocation MODEL_SLOPEDCONVEYORANIMATED = new ResourceLocation(References.ID + ":block/conveyorbeltslopedrunning");
-	public static final ResourceLocation MODEL_SLOPEDCONVEYORUP = new ResourceLocation(References.ID + ":block/conveyorbeltslopedup");
-	public static final ResourceLocation MODEL_SLOPEDCONVEYORUPANIMATED = new ResourceLocation(References.ID + ":block/conveyorbeltslopeduprunning");
-	public static final ResourceLocation MODEL_SLOPEDCONVEYORDOWN = new ResourceLocation(References.ID + ":block/conveyorbeltslopeddown");
-	public static final ResourceLocation MODEL_SLOPEDCONVEYORDOWNANIMATED = new ResourceLocation(References.ID + ":block/conveyorbeltslopeddownrunning");
-	public static final ResourceLocation MODEL_MANIPULATORINPUT = new ResourceLocation(References.ID + ":block/manipulatorinput");
-	public static final ResourceLocation MODEL_MANIPULATORINPUTRUNNING = new ResourceLocation(References.ID + ":block/manipulatorinputrunning");
-	public static final ResourceLocation MODEL_MANIPULATOROUTPUT = new ResourceLocation(References.ID + ":block/manipulatoroutput");
-	public static final ResourceLocation MODEL_MANIPULATOROUTPUTRUNNING = new ResourceLocation(References.ID + ":block/manipulatoroutputrunning");
-	public static final ResourceLocation MODEL_ELEVATOR = new ResourceLocation(References.ID + ":block/elevatorbelt");
-	public static final ResourceLocation MODEL_ELEVATORRUNNING = new ResourceLocation(References.ID + ":block/elevatorbeltrunning");
-	public static final ResourceLocation MODEL_ELEVATORBOTTOM = new ResourceLocation(References.ID + ":block/elevatorbeltbottom");
-	public static final ResourceLocation MODEL_ELEVATORBOTTOMRUNNING = new ResourceLocation(References.ID + ":block/elevatorbeltbottomrunning");
-	public static final ResourceLocation MODEL_MANIPULATOR = new ResourceLocation(References.ID + ":block/manipulator");
-	public static final ResourceLocation MODEL_BLOCKBREAKERWHEEL = new ResourceLocation(References.ID + ":block/blockbreakerwheel");
-	public static final ResourceLocation MODEL_MOBGRINDERSIDEWHEEL = new ResourceLocation(References.ID + ":block/mobgrindersidewheel");
-	public static final ResourceLocation MODEL_MOBGRINDERCENTERWHEEL = new ResourceLocation(References.ID + ":block/mobgrindercenterwheel");
-	public static final ResourceLocation MODEL_RANCHERLEFT = new ResourceLocation(References.ID + ":block/rancherleft");
-	public static final ResourceLocation MODEL_RANCHERRIGHT = new ResourceLocation(References.ID + ":block/rancherright");
-
-	public static void setup() {
-		ClientEvents.init();
-
-		MenuScreens.register(AssemblyLineMenuTypes.CONTAINER_SORTERBELT.get(), ScreenSorterBelt::new);
-		MenuScreens.register(AssemblyLineMenuTypes.CONTAINER_AUTOCRAFTER.get(), ScreenAutocrafter::new);
-		MenuScreens.register(AssemblyLineMenuTypes.CONTAINER_BLOCKPLACER.get(), ScreenBlockPlacer::new);
-		MenuScreens.register(AssemblyLineMenuTypes.CONTAINER_BLOCKBREAKER.get(), ScreenBlockBreaker::new);
-		MenuScreens.register(AssemblyLineMenuTypes.CONTAINER_HARVESTER.get(), ScreenFrontHarvester::new);
-		MenuScreens.register(AssemblyLineMenuTypes.CONTAINER_FARMER.get(), ScreenFarmer::new);
-
-		ScreenGuidebook.addGuidebookModule(new ModuleAssemblyLine());
-	}
-
 	@SubscribeEvent
 	public static void registerEntities(EntityRenderersEvent.RegisterRenderers event) {
-		event.registerBlockEntityRenderer(AssemblyLineBlockTypes.TILE_CRATE.get(), RenderCrate::new);
-		event.registerBlockEntityRenderer(AssemblyLineBlockTypes.TILE_BELT.get(), RenderConveyorBelt::new);
-		event.registerBlockEntityRenderer(AssemblyLineBlockTypes.TILE_BLOCKBREAKER.get(), RenderBlockBreaker::new);
-		event.registerBlockEntityRenderer(AssemblyLineBlockTypes.TILE_MOBGRINDER.get(), RenderMobGrinder::new);
-		event.registerBlockEntityRenderer(AssemblyLineBlockTypes.TILE_RANCHER.get(), RenderRancher::new);
-		event.registerBlockEntityRenderer(AssemblyLineBlockTypes.TILE_FARMER.get(), RenderFarmer::new);
+		event.registerBlockEntityRenderer(AssemblyLineTiles.TILE_CRATE.get(), RenderCrate::new);
+		event.registerBlockEntityRenderer(AssemblyLineTiles.TILE_BELT.get(), RenderConveyorBelt::new);
+		event.registerBlockEntityRenderer(AssemblyLineTiles.TILE_BLOCKBREAKER.get(), RenderBlockBreaker::new);
+		event.registerBlockEntityRenderer(AssemblyLineTiles.TILE_MOBGRINDER.get(), RenderMobGrinder::new);
+		event.registerBlockEntityRenderer(AssemblyLineTiles.TILE_RANCHER.get(), RenderRancher::new);
+		event.registerBlockEntityRenderer(AssemblyLineTiles.TILE_FARMER.get(), RenderFarmer::new);
 	}
 }
