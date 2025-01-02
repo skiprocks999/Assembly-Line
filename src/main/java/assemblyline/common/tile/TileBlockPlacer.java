@@ -11,7 +11,6 @@ import electrodynamics.prefab.tile.components.IComponentType;
 import electrodynamics.prefab.tile.components.type.*;
 import electrodynamics.prefab.tile.components.type.ComponentInventory.InventoryBuilder;
 import electrodynamics.prefab.utilities.BlockEntityUtils;
-import electrodynamics.prefab.utilities.object.TransferPack;
 import electrodynamics.registers.ElectrodynamicsCapabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,9 +25,6 @@ import net.minecraft.world.phys.Vec3;
 
 public class TileBlockPlacer extends TileOutlineArea {
 
-    public static final int DEFAULT_WAIT_TICKS = 600;
-    public static final int FASTEST_WAIT_TICKS = 60;
-
     public Property<Integer> ticksSinceCheck = property(new Property<>(PropertyTypes.INTEGER, "ticksSinceCheck", 0));
     public Property<Integer> currentWaitTime = property(new Property<>(PropertyTypes.INTEGER, "currentWaitTime", 0));
 
@@ -36,12 +32,12 @@ public class TileBlockPlacer extends TileOutlineArea {
         super(AssemblyLineTiles.TILE_BLOCKPLACER.get(), pos, state);
         addComponent(new ComponentPacketHandler(this));
         addComponent(new ComponentTickable(this).tickServer(this::tickServer));
-        addComponent(new ComponentElectrodynamic(this, false, true).setInputDirections(BlockEntityUtils.MachineDirection.BACK).voltage(ElectrodynamicsCapabilities.DEFAULT_VOLTAGE).maxJoules(Constants.BLOCKPLACER_USAGE * 2));
+        addComponent(new ComponentElectrodynamic(this, false, true).setInputDirections(BlockEntityUtils.MachineDirection.FRONT).voltage(ElectrodynamicsCapabilities.DEFAULT_VOLTAGE).maxJoules(Constants.BLOCKPLACER_USAGE * 2));
         addComponent(new ComponentInventory(this, InventoryBuilder.newInv().inputs(1).upgrades(3))
                 //
                 .setDirectionsBySlot(0, BlockEntityUtils.MachineDirection.TOP, BlockEntityUtils.MachineDirection.BOTTOM, BlockEntityUtils.MachineDirection.LEFT, BlockEntityUtils.MachineDirection.RIGHT).validUpgrades(ContainerBlockPlacer.VALID_UPGRADES).valid(machineValidator()));
         addComponent(new ComponentContainerProvider("container.blockplacer", this).createMenu((id, player) -> new ContainerBlockPlacer(id, player, getComponent(IComponentType.Inventory), getCoordsArray())));
-        height.set(2);
+        height.set(1);
     }
 
     public void tickServer(ComponentTickable tickable) {
@@ -82,7 +78,7 @@ public class TileBlockPlacer extends TileOutlineArea {
         Direction facing = getFacing();
         BlockPos off = worldPosition.offset(facing.getOpposite().getNormal());
         BlockState state = level.getBlockState(off);
-        electro.extractPower(TransferPack.joulesVoltage(Constants.BLOCKBREAKER_USAGE, ElectrodynamicsCapabilities.DEFAULT_VOLTAGE), false);
+        electro.setJoulesStored(electro.getJoulesStored() - Constants.BLOCKBREAKER_USAGE);
         if (!state.isAir()) {
             return;
         }

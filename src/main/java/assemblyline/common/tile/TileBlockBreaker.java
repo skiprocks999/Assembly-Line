@@ -22,9 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class TileBlockBreaker extends TileOutlineArea {
 
-	public static final int DEFAULT_WAIT_TICKS = 600;
-	public static final int FASTEST_WAIT_TICKS = 60;
-
 	public Property<Integer> ticksSinceCheck = property(new Property<>(PropertyTypes.INTEGER, "ticksSinceCheck", 0));
 	public Property<Integer> currentWaitTime = property(new Property<>(PropertyTypes.INTEGER, "currentWaitTime", 0));
 	public final Property<Boolean> works = property(new Property<>(PropertyTypes.BOOLEAN, "works", false));
@@ -34,10 +31,10 @@ public class TileBlockBreaker extends TileOutlineArea {
 		super(AssemblyLineTiles.TILE_BLOCKBREAKER.get(), pos, state);
 		addComponent(new ComponentPacketHandler(this));
 		addComponent(new ComponentTickable(this).tickServer(this::tickServer).tickClient(this::tickClient));
-		addComponent(new ComponentElectrodynamic(this, false, true).setInputDirections(BlockEntityUtils.MachineDirection.BACK).voltage(ElectrodynamicsCapabilities.DEFAULT_VOLTAGE).maxJoules(Constants.BLOCKBREAKER_USAGE * 20));
+		addComponent(new ComponentElectrodynamic(this, false, true).setInputDirections(BlockEntityUtils.MachineDirection.FRONT).voltage(ElectrodynamicsCapabilities.DEFAULT_VOLTAGE).maxJoules(Constants.BLOCKBREAKER_USAGE * 20));
 		addComponent(new ComponentInventory(this, InventoryBuilder.newInv().upgrades(3)).validUpgrades(ContainerBlockBreaker.VALID_UPGRADES).valid(machineValidator()));
 		addComponent(new ComponentContainerProvider("container.blockbreaker", this).createMenu((id, player) -> new ContainerBlockBreaker(id, player, getComponent(IComponentType.Inventory), getCoordsArray())));
-		height.set(2);
+		height.set(1);
 	}
 
 	public void tickServer(ComponentTickable component) {
@@ -72,14 +69,11 @@ public class TileBlockBreaker extends TileOutlineArea {
 			
 			return;
 			
-		} 
-		
-		if (!level.isClientSide) {
-			
-			level.destroyBlock(block, true); 
-			progress.set(0.0);
-
 		}
+
+		level.destroyBlock(block, true);
+		progress.set(0.0);
+
 		works.set(false);
 		
 	}

@@ -11,6 +11,7 @@ import electrodynamics.api.electricity.formatting.DisplayUnit;
 import electrodynamics.prefab.screen.component.button.ScreenComponentButton;
 import electrodynamics.prefab.screen.component.types.ScreenComponentCountdown;
 import electrodynamics.prefab.screen.component.types.guitab.ScreenComponentElectricInfo;
+import electrodynamics.prefab.screen.component.types.wrapper.WrapperInventoryIO;
 import electrodynamics.prefab.screen.component.utils.AbstractScreenComponentInfo;
 import electrodynamics.prefab.tile.components.IComponentType;
 import electrodynamics.prefab.tile.components.type.ComponentElectrodynamic;
@@ -43,6 +44,8 @@ public class ScreenMobGrinder extends GenericOutlineAreaScreen<ContainerMobGrind
             }
             return Component.empty();
         }).setOnPress(button -> toggleRendering()));
+
+        new WrapperInventoryIO(this, -AbstractScreenComponentInfo.SIZE + 1, AbstractScreenComponentInfo.SIZE + 2, 75, 82, 8, 72);
     }
 
     private List<? extends FormattedCharSequence> getElectricInformation() {

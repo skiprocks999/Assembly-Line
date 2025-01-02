@@ -35,7 +35,7 @@ public class TileMobGrinder extends TileOutlineArea {
         super(AssemblyLineTiles.TILE_MOBGRINDER.get(), pos, state);
         addComponent(new ComponentPacketHandler(this));
         addComponent(new ComponentTickable(this).tickServer(this::tickServer));
-        addComponent(new ComponentElectrodynamic(this, false, true).setInputDirections(BlockEntityUtils.MachineDirection.BACK).voltage(ElectrodynamicsCapabilities.DEFAULT_VOLTAGE).maxJoules(Constants.MOBGRINDER_USAGE * 40));
+        addComponent(new ComponentElectrodynamic(this, false, true).setInputDirections(BlockEntityUtils.MachineDirection.FRONT).voltage(ElectrodynamicsCapabilities.DEFAULT_VOLTAGE).maxJoules(Constants.MOBGRINDER_USAGE * 40));
         addComponent(new ComponentInventory(this, InventoryBuilder.newInv().outputs(9).upgrades(3))
                 //
                 .setDirectionsBySlot(0, BlockEntityUtils.MachineDirection.TOP, BlockEntityUtils.MachineDirection.BOTTOM, BlockEntityUtils.MachineDirection.LEFT, BlockEntityUtils.MachineDirection.RIGHT)
@@ -72,7 +72,7 @@ public class TileMobGrinder extends TileOutlineArea {
 
         ComponentElectrodynamic electro = getComponent(IComponentType.Electrodynamic);
 
-        if (electro.getJoulesStored() < Constants.MOBGRINDER_USAGE || !inv.areOutputsEmpty()) {
+        if (electro.getJoulesStored() < Constants.MOBGRINDER_USAGE * powerUsageMultiplier.get() || !inv.areOutputsEmpty()) {
             return;
         }
 
@@ -86,7 +86,7 @@ public class TileMobGrinder extends TileOutlineArea {
             return;
         }
 
-        checkArea = getAABB(width.get(), length.get(), height.get(), true, false, this);
+        checkArea = getAABB(width.get(), length.get(), height.get(), true).inflate(1);
         List<Entity> entities = level.getEntities(null, checkArea);
 
         for (Entity entity : entities) {

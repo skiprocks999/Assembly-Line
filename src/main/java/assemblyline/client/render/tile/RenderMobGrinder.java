@@ -26,8 +26,9 @@ public class RenderMobGrinder extends AbstractTileRenderer<TileMobGrinder> {
     public void render(TileMobGrinder grinder, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
 
         double progress = 0;
-        if (grinder.<ComponentElectrodynamic>getComponent(IComponentType.Electrodynamic).getJoulesStored() >= Constants.MOBGRINDER_USAGE) {
-            progress = grinder.getLevel().getDayTime() + partialTicks;
+
+        if (grinder.<ComponentElectrodynamic>getComponent(IComponentType.Electrodynamic).getJoulesStored() >= Constants.MOBGRINDER_USAGE * grinder.powerUsageMultiplier.get()) {
+            progress = System.currentTimeMillis() % 400 / 400.0 * 360.0;
         }
 
         BakedModel ibakedmodel = Minecraft.getInstance().getModelManager().getModel(ClientRegister.MODEL_MOBGRINDERSIDEWHEEL);

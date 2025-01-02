@@ -38,7 +38,7 @@ public abstract class GenericOutlineAreaScreen<T extends GenericContainerBlockEn
     }
 
     public void updateBox(TileOutlineArea area) {
-        HandlerHarvesterLines.addLines(area.getBlockPos(), area.getAABB(area.width.get(), area.length.get(), area.height.get(), isFlipped(), true, area));
+        HandlerHarvesterLines.addLines(area.getBlockPos(), area.getAABB(area.width.get(), area.length.get(), area.height.get(), isFlipped()));
     }
 
     public abstract boolean isFlipped();

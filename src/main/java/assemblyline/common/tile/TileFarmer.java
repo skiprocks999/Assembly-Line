@@ -1,6 +1,7 @@
 package assemblyline.common.tile;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -35,20 +36,15 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.BoneMealItem;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.CactusBlock;
-import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.NetherWartBlock;
-import net.minecraft.world.level.block.SugarCaneBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.SpecialPlantable;
+import net.neoforged.neoforge.common.Tags;
 
 public class TileFarmer extends GenericTile {
 
@@ -60,12 +56,67 @@ public class TileFarmer extends GenericTile {
 
     public static final int OPERATION_OFFSET = 2;
 
-    private static final int[][] TreeScanningGrid = new int[][]{ // Don't need to check bellow any blocks, as trees don't grow like that.
+    public static final int MIN_CHORUS_PLANT_SIZE = 5;
+
+    private static final int[][] TREE_SCANNING_GRID = new int[][]{ // Don't need to check bellow any blocks, as trees don't grow like that.
             {1, 1, 1}, {1, 1, 0}, {1, 1, -1}, {1, 0, 1}, {1, 0, 0}, {1, 0, -1},
 
             {0, 1, 1}, {0, 1, 0}, {0, 1, -1}, {0, 0, 1}, {0, 0, 0}, {0, 0, -1},
 
             {-1, 1, 1}, {-1, 1, 0}, {-1, 1, -1}, {-1, 0, 1}, {-1, 0, 0}, {-1, 0, -1},};
+
+    private static final List<TagKey<Item>> VANILLA_SEED_TAGS = List.of(
+            //
+            Tags.Items.SEEDS_BEETROOT,
+            //
+            Tags.Items.SEEDS_MELON,
+            //
+            Tags.Items.SEEDS_WHEAT,
+            //
+            Tags.Items.SEEDS_PUMPKIN,
+            //
+            Tags.Items.CROPS_CACTUS,
+            //
+            Tags.Items.CROPS_SUGAR_CANE,
+            //
+            Tags.Items.CROPS_CARROT,
+            //
+            Tags.Items.CROPS_COCOA_BEAN,
+            //
+            Tags.Items.CROPS_NETHER_WART,
+            //
+            Tags.Items.CROPS_POTATO,
+            //
+            ItemTags.SAPLINGS
+            //
+    );
+
+    private static final List<TagKey<Item>> VANILLA_TILLABLE_SEED_TAGS = List.of(
+//
+            Tags.Items.SEEDS_BEETROOT,
+            //
+            Tags.Items.SEEDS_MELON,
+            //
+            Tags.Items.SEEDS_WHEAT,
+            //
+            Tags.Items.SEEDS_PUMPKIN,
+            //
+            Tags.Items.CROPS_CARROT,
+            //
+            Tags.Items.CROPS_POTATO
+            //
+
+    );
+
+    private static final List<Item> VANILLA_SEED_ITEMS = List.of(
+            //
+            Items.BAMBOO,
+            //
+            Items.CHORUS_FLOWER
+            //
+
+    );
+
 
     private int prevXShift = 0;
     private int prevZShift = 0;
@@ -144,7 +195,7 @@ public class TileFarmer extends GenericTile {
 
     private void handleHarvest(BlockPos checkPos, int quadrant) {
         ComponentInventory inv = getComponent(IComponentType.Inventory);
-        if (!inv.areInputsEmpty()) {
+        if (!inv.areOutputsEmpty()) {
             return;
         }
         Level world = getLevel();
@@ -176,13 +227,83 @@ public class TileFarmer extends GenericTile {
             breakBlock(checkState, world, checkPos, inv, SoundEvents.NETHER_WART_BREAK);
         } else if (checkState.is(BlockTags.LOGS)) {
             handleTree(world, checkPos, inv);
+        } else if (checkState.is(Blocks.BAMBOO_SAPLING)) {
+            BlockPos above = checkPos.above();
+            List<BlockPos> positions = new ArrayList<>();
+            while (world.getBlockState(above).getBlock() instanceof BambooStalkBlock) {
+                positions.add(above);
+                above = above.above();
+            }
+            BlockPos currPos;
+            BlockState currState;
+            for (int i = positions.size() - 1; i >= 0; i--) {
+                currPos = positions.get(i);
+                currState = world.getBlockState(currPos);
+                breakBlock(currState, world, currPos, inv, SoundEvents.GRASS_BREAK);
+            }
+        } else if (checkState.getBlock() instanceof ChorusPlantBlock) {
+            handleChorusTree(world, checkPos, inv);
         }
     }
 
-    private void handleTree(Level world, BlockPos checkPos, ComponentInventory inv) {
+    private void handleChorusTree(Level world, BlockPos checkPos, ComponentInventory inv) {
 
-        //ITag<Block> logs = ForgeRegistries.BLOCKS.tags().getTag(BlockTags.LOGS);
-        //ITag<Block> leaves = ForgeRegistries.BLOCKS.tags().getTag(BlockTags.LEAVES);
+        List<BlockPos> scannedBlocks = new ArrayList<>(64);
+        Queue<BlockPos> toScan = new ConcurrentLinkedQueue<>();
+        HashSet<BlockPos> chorusBlockSet = new HashSet<>(64);
+        HashSet<BlockPos> chorusFlowerSet = new HashSet<>(64);
+        toScan.add(checkPos);
+
+        chorusBlockSet.add(checkPos);
+
+        BlockState currState = world.getBlockState(checkPos);
+        Block currBlock = currState.getBlock();
+
+        while (!toScan.isEmpty()) {
+            BlockPos itemPos = toScan.remove();
+
+            for (int[] offset : TREE_SCANNING_GRID) {
+                BlockPos currPos = itemPos.offset(offset[0], offset[1], offset[2]);
+
+                // ignore already checked blocks
+                if (scannedBlocks.contains(currPos)) {
+                    continue;
+                }
+                scannedBlocks.add(itemPos);
+
+                currState = world.getBlockState(currPos);
+                currBlock = currState.getBlock();
+                if(currBlock instanceof ChorusPlantBlock) {
+                    toScan.add(currPos);
+                    chorusBlockSet.add(currPos);
+                } else if (currBlock instanceof ChorusFlowerBlock) {
+                    toScan.add(currPos);
+                    chorusFlowerSet.add(currPos);
+                }
+            }
+        }
+
+        if((chorusFlowerSet.size() + chorusBlockSet.size()) <= MIN_CHORUS_PLANT_SIZE) {
+            return;
+        }
+
+        List<BlockPos> validBlocks = new ArrayList<>(chorusBlockSet);
+
+        validBlocks.sort((pos1, pos2) -> pos2.getY() - pos1.getY());
+
+        for(BlockPos pos : chorusFlowerSet) {
+            breakBlock(world.getBlockState(pos), world, pos, inv, SoundEvents.WOOD_BREAK);
+        }
+
+        for(BlockPos pos : validBlocks) {
+            breakBlock(world.getBlockState(pos), world, pos, inv, SoundEvents.WOOD_BREAK);
+        }
+
+
+
+    }
+
+    private void handleTree(Level world, BlockPos checkPos, ComponentInventory inv) {
 
         List<BlockPos> scannedBlocks = new ArrayList<>(64);
         Queue<BlockPos> toScan = new ConcurrentLinkedQueue<>();
@@ -194,7 +315,7 @@ public class TileFarmer extends GenericTile {
         while (!toScan.isEmpty()) {
             BlockPos itemPos = toScan.remove();
 
-            for (int[] offset : TreeScanningGrid) {
+            for (int[] offset : TREE_SCANNING_GRID) {
                 boolean isLeaves;
                 BlockPos currPos = itemPos.offset(offset[0], offset[1], offset[2]);
 
@@ -216,13 +337,20 @@ public class TileFarmer extends GenericTile {
 
     private void breakBlock(BlockState checkState, Level world, BlockPos checkPos, ComponentInventory inv, SoundEvent event) {
         List<ItemStack> drops = Block.getDrops(checkState, (ServerLevel) world, checkPos, null);
+        if(checkState.is(Blocks.CHORUS_FLOWER)) {
+            drops.add(new ItemStack(Blocks.CHORUS_FLOWER));
+        }
         InventoryUtils.addItemsToInventory(inv, drops, inv.getOutputStartIndex(), inv.getOutputContents().size());
-        world.setBlockAndUpdate(checkPos, Blocks.AIR.defaultBlockState());
+
+        //world.setBlock(checkPos, Blocks.AIR.defaultBlockState(), 3);
+        world.destroyBlock(checkPos, false);
         world.playSound(null, checkPos, event, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
 
     private void handlePlanting(BlockPos checkPos, int quadrant) {
+
         Level world = getLevel();
+
         ComponentInventory inv = getComponent(IComponentType.Inventory);
         ComponentElectrodynamic electro = getComponent(IComponentType.Electrodynamic);
         List<ItemStack> inputs = inv.getInputContents();
@@ -234,24 +362,40 @@ public class TileFarmer extends GenericTile {
         BlockState farmland = Blocks.FARMLAND.defaultBlockState();
         boolean isAir = checkState.isAir();
         // Check block type
-        if (isAir && plantingContents.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SpecialPlantable plantable) {
-
+        if (isAir && plantingContents.getItem() instanceof BlockItem blockItem) {
             Block block = blockItem.getBlock();
-            // first we check if it can be planted
-            if (plantable.canPlacePlantAtPosition(plantingContents, level, checkPos, Direction.DOWN)) {
-                world.setBlockAndUpdate(checkPos, block.defaultBlockState());
-                world.playSound(null, checkPos, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 1.0F, 1.0F);
-                plantingContents.shrink(1);
-                electro.extractPower(TransferPack.joulesVoltage(Constants.FARMER_USAGE * powerUsageMultiplier.get(), electro.getVoltage()), false);
-                // then we check if it can be planted if the block becomes farmland
-            } else if (belowState.is(Blocks.DIRT) && farmland.canSustainPlant(world, below, Direction.UP, blockItem.getBlock().defaultBlockState()).isTrue()) {
-                world.setBlockAndUpdate(below, farmland);
-                world.playSound(null, below, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-                world.setBlockAndUpdate(checkPos, block.defaultBlockState());
-                world.playSound(null, checkPos, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 1.0F, 1.0F);
-                plantingContents.shrink(1);
-                electro.extractPower(TransferPack.joulesVoltage(Constants.FARMER_USAGE * powerUsageMultiplier.get(), electro.getVoltage()), false);
+            if (blockItem instanceof SpecialPlantable plantable) {
+                if (plantable.canPlacePlantAtPosition(plantingContents, level, checkPos, Direction.DOWN)) {
+                    plantable.spawnPlantAtPosition(plantingContents, level, checkPos, Direction.DOWN);
+                    world.playSound(null, checkPos, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    plantingContents.shrink(1);
+                    electro.extractPower(TransferPack.joulesVoltage(Constants.FARMER_USAGE * powerUsageMultiplier.get(), electro.getVoltage()), false);
+                    // then we check if it can be planted if the block becomes farmland
+                } else if (belowState.is(BlockTags.DIRT)) {
+                    world.setBlockAndUpdate(below, farmland);
+                    world.playSound(null, below, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    electro.extractPower(TransferPack.joulesVoltage(Constants.FARMER_USAGE * powerUsageMultiplier.get(), electro.getVoltage()), false);
+                }
+            } else if (checkVanilla(plantingContents, blockItem)) {
+
+                if (block.defaultBlockState().canSurvive(world, checkPos)) {
+
+                    world.setBlockAndUpdate(checkPos, block.defaultBlockState());
+                    world.playSound(null, checkPos, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    plantingContents.shrink(1);
+                    electro.extractPower(TransferPack.joulesVoltage(Constants.FARMER_USAGE * powerUsageMultiplier.get(), electro.getVoltage()), false);
+
+                } else if (belowState.is(BlockTags.DIRT) && isVanillaTillable(plantingContents)) {
+                    world.setBlockAndUpdate(below, farmland);
+                    world.playSound(null, below, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    world.setBlockAndUpdate(checkPos, block.defaultBlockState());
+                    world.playSound(null, checkPos, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    plantingContents.shrink(1);
+                    electro.extractPower(TransferPack.joulesVoltage(Constants.FARMER_USAGE * powerUsageMultiplier.get(), electro.getVoltage()), false);
+                }
             }
+
+
         }
         // update checkState in case something has been planted
         checkState = world.getBlockState(checkPos);
@@ -267,6 +411,29 @@ public class TileFarmer extends GenericTile {
                 bonemeal.shrink(1);
             }
         }
+    }
+
+    private boolean checkVanilla(ItemStack plantingContents, BlockItem blockItem) {
+        for (TagKey<Item> tag : VANILLA_SEED_TAGS) {
+            if (plantingContents.is(tag)) {
+                return true;
+            }
+        }
+        for (Item item : VANILLA_SEED_ITEMS) {
+            if (plantingContents.is(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isVanillaTillable(ItemStack plantingContents) {
+        for (TagKey<Item> tag : VANILLA_TILLABLE_SEED_TAGS) {
+            if (plantingContents.is(tag)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void refillInputs() {
@@ -303,19 +470,17 @@ public class TileFarmer extends GenericTile {
         int zOffset = farmer.currentLength.get() / 2;
         BlockPos startPos;
         BlockPos endPos;
-        if (multiplier == 0) {
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    startPos = new BlockPos(x - 1 + i, y + 1, z - 1 + j);
-                    endPos = new BlockPos(x - 1 + i + 1, y, z - 1 + j + 1);
-                    boundingBoxes.add(AABB.encapsulatingFullBlocks(startPos, endPos));
+        if (multiplier == 1) {
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    boundingBoxes.add(new AABB(x + i, y, z + j, x + i + 1, y + 1, z + j + 1));
                 }
             }
         } else {
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    startPos = new BlockPos(x - xOffset + i * multiplier, y + 1, z - zOffset + j * multiplier);
-                    endPos = new BlockPos(x - xOffset + (i + 1) * multiplier, y, z - zOffset + (j + 1) * multiplier);
+            for (int i = 0; i <= 2; i++) {
+                for (int j = 0; j <= 2; j++) {
+                    startPos = new BlockPos(x + i * multiplier - xOffset, y, z + j * multiplier - zOffset);
+                    endPos = new BlockPos(x + (i + 1) * multiplier - xOffset - 1, y, z + (j + 1) * multiplier - 1 - zOffset);
                     boundingBoxes.add(AABB.encapsulatingFullBlocks(startPos, endPos));
                 }
             }

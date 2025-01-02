@@ -35,9 +35,9 @@ public class TileRancher extends TileOutlineArea {
 
 	public TileRancher(BlockPos pos, BlockState state) {
 		super(AssemblyLineTiles.TILE_RANCHER.get(), pos, state);
-		addComponent(new ComponentPacketHandler(this));
+		//addComponent(new ComponentPacketHandler(this));
 		addComponent(new ComponentTickable(this).tickServer(this::tickServer));
-		addComponent(new ComponentElectrodynamic(this, false, true).setInputDirections(BlockEntityUtils.MachineDirection.BACK).voltage(ElectrodynamicsCapabilities.DEFAULT_VOLTAGE).maxJoules(Constants.RANCHER_USAGE * 20));
+		addComponent(new ComponentElectrodynamic(this, false, true).setInputDirections(BlockEntityUtils.MachineDirection.FRONT).voltage(ElectrodynamicsCapabilities.DEFAULT_VOLTAGE).maxJoules(Constants.RANCHER_USAGE * 20));
 		addComponent(new ComponentInventory(this, InventoryBuilder.newInv().outputs(9).upgrades(3))
 				//
 				.setDirectionsBySlot(0, BlockEntityUtils.MachineDirection.TOP, BlockEntityUtils.MachineDirection.BOTTOM, BlockEntityUtils.MachineDirection.LEFT, BlockEntityUtils.MachineDirection.RIGHT)
@@ -87,7 +87,7 @@ public class TileRancher extends TileOutlineArea {
 			return;
 		}
 
-		checkArea = getAABB(width.get(), length.get(), height.get(), true, false, this);
+		checkArea = getAABB(width.get(), length.get(), height.get(), true);
 		
 		List<Entity> entities = level.getEntities(null, checkArea);
 		

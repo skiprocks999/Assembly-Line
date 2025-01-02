@@ -27,10 +27,10 @@ public class RenderRancher extends AbstractTileRenderer<TileRancher> {
 
         double progress = 0;
         if (rancher.<ComponentElectrodynamic>getComponent(IComponentType.Electrodynamic).getJoulesStored() >= Constants.RANCHER_USAGE) {
-            progress = rancher.getLevel().getDayTime() + partialTicks;
+            progress = System.currentTimeMillis() % 100 / 100.0 * 40;
         }
 
-        progress = Math.sin(progress / 80) * 50;
+        //progress = Math.sin(progress ) * 50;
         BakedModel ibakedmodel = Minecraft.getInstance().getModelManager().getModel(ClientRegister.MODEL_RANCHERLEFT);
         matrixStackIn.pushPose();
         RenderingUtils.prepareRotationalTileModel(rancher, matrixStackIn);
