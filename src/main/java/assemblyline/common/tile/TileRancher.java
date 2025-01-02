@@ -15,7 +15,7 @@ import electrodynamics.prefab.tile.components.IComponentType;
 import electrodynamics.prefab.tile.components.type.*;
 import electrodynamics.prefab.tile.components.type.ComponentInventory.InventoryBuilder;
 import electrodynamics.prefab.utilities.BlockEntityUtils;
-import electrodynamics.prefab.utilities.InventoryUtils;
+import electrodynamics.prefab.utilities.ItemUtils;
 import electrodynamics.registers.ElectrodynamicsCapabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -108,7 +108,45 @@ public class TileRancher extends TileOutlineArea {
 			}
 		}
 		if (!collectedItems.isEmpty()) {
-			InventoryUtils.addItemsToInventory(inv, collectedItems, inv.getOutputStartIndex(), inv.getOutputContents().size());
+			int max = inv.getOutputStartIndex() + inv.getOutputContents().size();
+
+			for(ItemStack item : collectedItems) {
+
+				for (int i = inv.getOutputStartIndex(); i < max; i++) {
+
+					ItemStack contained = inv.getItem(i);
+
+					int room = contained.getMaxStackSize() - contained.getCount();
+
+					int amtAccepted = Math.min(room, item.getCount());
+
+					if(amtAccepted == 0) {
+						continue;
+					}
+
+					if (contained.isEmpty()) {
+
+						inv.setItem(i, new ItemStack(item.getItem(), amtAccepted));
+
+						item.shrink(amtAccepted);
+
+					} else if (ItemUtils.testItems(item.getItem(), contained.getItem())) {
+
+						contained.grow(amtAccepted);
+
+						item.shrink(amtAccepted);
+
+						inv.setChanged();
+
+					}
+
+					if(item.isEmpty()) {
+						break;
+					}
+
+				}
+
+			}
 		}
 	}
 

@@ -25,7 +25,6 @@ import electrodynamics.prefab.tile.components.type.ComponentInventory;
 import electrodynamics.prefab.tile.components.type.ComponentInventory.InventoryBuilder;
 import electrodynamics.prefab.tile.components.type.ComponentPacketHandler;
 import electrodynamics.prefab.tile.components.type.ComponentTickable;
-import electrodynamics.prefab.utilities.InventoryUtils;
 import electrodynamics.prefab.utilities.ItemUtils;
 import electrodynamics.prefab.utilities.object.TransferPack;
 import net.minecraft.core.BlockPos;
@@ -340,7 +339,46 @@ public class TileFarmer extends GenericTile {
         if(checkState.is(Blocks.CHORUS_FLOWER)) {
             drops.add(new ItemStack(Blocks.CHORUS_FLOWER));
         }
-        InventoryUtils.addItemsToInventory(inv, drops, inv.getOutputStartIndex(), inv.getOutputContents().size());
+
+        int max = inv.getOutputStartIndex() + inv.getOutputContents().size();
+
+        for(ItemStack item : drops) {
+
+            for (int i = inv.getOutputStartIndex(); i < max; i++) {
+
+                ItemStack contained = inv.getItem(i);
+
+                int room = contained.getMaxStackSize() - contained.getCount();
+
+                int amtAccepted = Math.min(room, item.getCount());
+
+                if(amtAccepted == 0) {
+                    continue;
+                }
+
+                if (contained.isEmpty()) {
+
+                    inv.setItem(i, new ItemStack(item.getItem(), amtAccepted));
+
+                    item.shrink(amtAccepted);
+
+                } else if (ItemUtils.testItems(item.getItem(), contained.getItem())) {
+
+                    contained.grow(amtAccepted);
+
+                    item.shrink(amtAccepted);
+
+                    inv.setChanged();
+
+                }
+
+                if(item.isEmpty()) {
+                    break;
+                }
+
+            }
+
+        }
 
         //world.setBlock(checkPos, Blocks.AIR.defaultBlockState(), 3);
         world.destroyBlock(checkPos, false);
