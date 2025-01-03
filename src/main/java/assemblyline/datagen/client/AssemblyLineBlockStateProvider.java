@@ -28,7 +28,7 @@ public class AssemblyLineBlockStateProvider extends ElectrodynamicsBlockStatePro
 		horrRotatedBlock(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getValue(SubtypeAssemblyMachine.farmer), existingBlock(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getValue(SubtypeAssemblyMachine.farmer)), true);
 		horrRotatedBlock(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getValue(SubtypeAssemblyMachine.mobgrinder), existingBlock(blockLoc("mobgrinderbase")), 270, 90, false);
 		horrRotatedBlock(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getValue(SubtypeAssemblyMachine.rancher), existingBlock(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getValue(SubtypeAssemblyMachine.rancher)), 270, 90, true);
-		horrRotatedLitBlock(AssemblyLineBlocks.BLOCK_SORTERBELT, existingBlock(AssemblyLineBlocks.BLOCK_SORTERBELT), existingBlock(blockLoc("sorterbeltrunning")), true);
+		horrRotatedBlock(AssemblyLineBlocks.BLOCK_SORTERBELT, existingBlock(AssemblyLineBlocks.BLOCK_SORTERBELT), true);
 
 	}
 

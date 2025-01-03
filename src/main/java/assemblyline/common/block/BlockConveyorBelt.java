@@ -4,9 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import assemblyline.common.tile.belt.TileConveyorBelt;
-import assemblyline.common.tile.belt.TileConveyorBelt.ConveyorType;
+import assemblyline.common.tile.belt.utils.GenericTileConveyorBelt;
 import com.mojang.serialization.MapCodec;
 import electrodynamics.common.block.states.ElectrodynamicsBlockStates;
+import electrodynamics.common.block.voxelshapes.VoxelShapeProvider;
 import electrodynamics.prefab.block.GenericEntityBlockWaterloggable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,6 +17,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.storage.loot.LootParams.Builder;
@@ -26,24 +28,32 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class BlockConveyorBelt extends GenericEntityBlockWaterloggable {
 	private static final VoxelShape SHAPE = Shapes.box(0, 0, 0, 1, 5.0 / 16.0, 1);
 
-	public BlockConveyorBelt() {
+	private final VoxelShapeProvider shapeProvider;
+	private final BlockEntityType.BlockEntitySupplier<?> supplier;
+
+	public BlockConveyorBelt(VoxelShapeProvider shapeProvider, BlockEntityType.BlockEntitySupplier<?> supplier) {
 		super(Blocks.IRON_BLOCK.properties().strength(3.5F).sound(SoundType.METAL).requiresCorrectToolForDrops().noOcclusion());
 		registerDefaultState(stateDefinition.any().setValue(ElectrodynamicsBlockStates.FACING, Direction.NORTH));
+		this.shapeProvider = shapeProvider;
+		this.supplier = supplier;
 	}
 
 	@Override
 	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-		return SHAPE;
+
+		Direction dir = null;
+		if (state.hasProperty(ElectrodynamicsBlockStates.FACING)) {
+			dir = state.getValue(ElectrodynamicsBlockStates.FACING);
+		}
+
+		return this.shapeProvider.getShape(dir);
+
 	}
 
 	@Override
 	public void onRotate(ItemStack stack, BlockPos pos, Player player) {
-		if (player.level().getBlockEntity(pos) instanceof TileConveyorBelt belt) {
-			if (belt.conveyorType.get() + 1 <= ConveyorType.values().length - 1) {
-				belt.conveyorType.set(ConveyorType.values()[belt.conveyorType.get() + 1].ordinal());
-			} else {
-				belt.conveyorType.set(ConveyorType.values()[0].ordinal());
-			}
+		if (player.level().getBlockEntity(pos) instanceof GenericTileConveyorBelt belt) {
+			belt.cycleConveyorType();
 		}
 	}
 
@@ -75,6 +85,6 @@ public class BlockConveyorBelt extends GenericEntityBlockWaterloggable {
 
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return new TileConveyorBelt(pos, state);
+		return supplier.create(pos, state);
 	}
 }

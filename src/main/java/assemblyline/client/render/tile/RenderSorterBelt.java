@@ -1,16 +1,10 @@
 package assemblyline.client.render.tile;
 
-import assemblyline.common.tile.belt.utils.ConveyorType;
-import assemblyline.common.tile.belt.utils.GenericTileConveyorBelt;
-import electrodynamics.client.render.tile.AbstractTileRenderer;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.world.phys.AABB;
-import org.joml.Vector3f;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import assemblyline.client.ClientRegister;
-import assemblyline.common.tile.belt.TileConveyorBelt;
+import assemblyline.common.tile.belt.TileSorterBelt;
+import assemblyline.common.tile.belt.utils.ConveyorType;
+import com.mojang.blaze3d.vertex.PoseStack;
+import electrodynamics.client.render.tile.AbstractTileRenderer;
 import electrodynamics.prefab.tile.components.IComponentType;
 import electrodynamics.prefab.tile.components.type.ComponentInventory;
 import electrodynamics.prefab.utilities.RenderingUtils;
@@ -18,23 +12,21 @@ import electrodynamics.prefab.utilities.math.MathUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
-public class RenderConveyorBelt extends AbstractTileRenderer<TileConveyorBelt> {
+public class RenderSorterBelt extends AbstractTileRenderer<TileSorterBelt> {
 
-    public RenderConveyorBelt(BlockEntityRendererProvider.Context context) {
+    public RenderSorterBelt(BlockEntityRendererProvider.Context context) {
         super(context);
     }
 
     @Override
-    public void render(TileConveyorBelt tile, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-
-        matrixStackIn.pushPose();
+    public void render(@NotNull TileSorterBelt tile, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
 
         ComponentInventory inv = tile.getComponent(IComponentType.Inventory);
 
@@ -52,7 +44,7 @@ public class RenderConveyorBelt extends AbstractTileRenderer<TileConveyorBelt> {
 
             move = tile.getDirectionVector();
 
-            Direction direct = tile.getFacing().getOpposite();
+            Direction direct = tile.getDirectionForNext();
 
             if (type != ConveyorType.HORIZONTAL) {
 
@@ -219,99 +211,9 @@ public class RenderConveyorBelt extends AbstractTileRenderer<TileConveyorBelt> {
 
         RenderingUtils.prepareRotationalTileModel(tile, matrixStackIn);
 
-        if (type == ConveyorType.SLOPED_DOWN) {
-
-            matrixStackIn.translate(0, -1, 0);
-
-            matrixStackIn.mulPose(MathUtils.rotQuaternionDeg(0, 180, 0));
-            // matrixStackIn.mulPose(new Quaternion(0, 180, 0, true));
-
-        }
-
-        ModelResourceLocation location = switch (type) {
-
-            case SLOPED_DOWN -> tile.running.get() ? ClientRegister.MODEL_SLOPEDCONVEYORDOWNANIMATED : ClientRegister.MODEL_SLOPEDCONVEYORDOWN;
-            case SLOPED_UP -> tile.running.get() ? ClientRegister.MODEL_SLOPEDCONVEYORUPANIMATED : ClientRegister.MODEL_SLOPEDCONVEYORUP;
-            case VERTICAL -> {
-
-                if (tile.getLevel().getBlockEntity(tile.getBlockPos().below()) instanceof GenericTileConveyorBelt belt && belt.getConveyorType() == ConveyorType.VERTICAL) {
-
-                    yield tile.running.get() ? ClientRegister.MODEL_ELEVATORRUNNING : ClientRegister.MODEL_ELEVATOR;
-
-                } else {
-
-                    yield tile.running.get() ? ClientRegister.MODEL_ELEVATORBOTTOMRUNNING : ClientRegister.MODEL_ELEVATORBOTTOM;
-
-                }
-
-            }
-            default -> tile.running.get() ? ClientRegister.MODEL_CONVEYORANIMATED : ClientRegister.MODEL_CONVEYOR;
-        };
-
-        RenderingUtils.renderModel(getModel(location), tile, RenderType.solid(), matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-
-        matrixStackIn.popPose();
-
-        move = tile.getDirectionVector();
-
-        BakedModel model = getModel(ClientRegister.MODEL_MANIPULATOR);
-
-        if (tile.isPusher.get()) {
-
-            BlockPos nextBlockPos = tile.getNextPos().subtract(tile.getBlockPos());
-
-            matrixStackIn.pushPose();
-
-            matrixStackIn.translate(0, 1 / 16.0, 0);
-
-            if (type == ConveyorType.SLOPED_DOWN) {
-
-                matrixStackIn.translate(0, 0.4, 0);
-
-            }
-
-            matrixStackIn.translate(nextBlockPos.getX() - move.x(), nextBlockPos.getY() - move.y(), nextBlockPos.getZ() - move.z());
-
-            RenderingUtils.prepareRotationalTileModel(tile, matrixStackIn);
-
-            RenderingUtils.renderModel(model, tile, RenderType.solid(), matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-
-            matrixStackIn.popPose();
-
-        } else if (tile.isPuller.get()) {
-
-            matrixStackIn.pushPose();
-
-            matrixStackIn.translate(0, 1 / 16.0, 0);
-
-            RenderingUtils.prepareRotationalTileModel(tile, matrixStackIn);
-
-            if (type == ConveyorType.SLOPED_UP) {
-
-                matrixStackIn.translate(0, 0.4, 0);
-
-            }
-
-            matrixStackIn.mulPose(MathUtils.rotQuaternionDeg(0, 180, 0));
-            // matrixStackIn.mulPose(new Quaternion(0, 180, 0, true));
-
-            RenderingUtils.renderModel(model, tile, RenderType.solid(), matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-
-            matrixStackIn.popPose();
-
-        }
+        RenderingUtils.renderModel(getModel(tile.running.get() ? ClientRegister.MODEL_SORTERBELT_RUNNING : ClientRegister.MODEL_SORTERBELT), tile, RenderType.solid(), matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
 
         matrixStackIn.popPose();
 
     }
-
-    @Override
-    public AABB getRenderBoundingBox(TileConveyorBelt blockEntity) {
-        return super.getRenderBoundingBox(blockEntity).inflate(3);
-    }
-
-    public int getInventorySize() {
-        return 1;
-    }
-
 }

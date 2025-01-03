@@ -116,6 +116,8 @@ public class AssemblyLineVoxelShapes {
             //
     );
 
+    public static final VoxelShapeProvider CONVEYORBELT = VoxelShapeProvider.createOmni(Shapes.box(0, 0, 0, 16.0 / 16.0, 5.0 / 16.0, 16.0 / 16.0));
+
     public static final VoxelShapeProvider ENERGIZEDRANCHER = VoxelShapeProvider.createDirectional(
             //
             Direction.SOUTH,
