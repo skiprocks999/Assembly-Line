@@ -14,6 +14,7 @@ import electrodynamics.prefab.tile.components.type.ComponentTickable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -92,13 +93,18 @@ public class TileCrate extends GenericTile {
 
 	@Override
 	public ItemInteractionResult useWithItem(ItemStack used, Player player, InteractionHand hand, BlockHitResult hit) {
-		if (!player.isShiftKeyDown()) {
+		if (!player.isShiftKeyDown() && !player.getItemInHand(hand).isEmpty()) {
 
-			player.setItemInHand(hand, HopperBlockEntity.addItem(player.getInventory(), getComponent(IComponentType.Inventory), player.getItemInHand(hand), Direction.EAST));
+			if(!level.isClientSide) player.setItemInHand(hand, HopperBlockEntity.addItem(player.getInventory(), getComponent(IComponentType.Inventory), player.getItemInHand(hand), Direction.EAST));
 
 			return ItemInteractionResult.CONSUME;
 		}
 
+		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+	}
+
+	@Override
+	public InteractionResult useWithoutItem(Player player, BlockHitResult hit) {
 		ComponentInventory inv = getComponent(IComponentType.Inventory);
 
 		for (int i = 0; i < inv.getContainerSize(); i++) {
@@ -109,15 +115,14 @@ public class TileCrate extends GenericTile {
 
 			if (!level.isClientSide()) {
 
-				ItemEntity item = new ItemEntity(level, player.getX() + 0.5, player.getY() + 0.5, player.getZ() + 0.5, stack);
+				ItemEntity item = new ItemEntity(level, player.getX() + 0.5, player.getY() + 0.5, player.getZ() + 0.5, stack.copy());
 
 				level.addFreshEntity(item);
 
 				inv.removeItem(i, stack.getCount());
 			}
-			return ItemInteractionResult.CONSUME;
+			return InteractionResult.CONSUME;
 		}
-		return ItemInteractionResult.FAIL;
+		return InteractionResult.FAIL;
 	}
-
 }

@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -60,14 +61,21 @@ public class RenderBlockBreaker extends AbstractTileRenderer<TileBlockBreaker> {
         }
 
         matrixStackIn.pushPose();
-        Vec3i norm = breaker.getFacing().getOpposite().getNormal();
-        BlockPos off = breaker.getBlockPos().offset(norm);
-        BlockState state = breaker.getLevel().getBlockState(off);
+
+        Direction breaking = breaker.getFacing().getOpposite();
+
+        BlockPos offset = breaker.getBlockPos().relative(breaking);
+
+        BlockState state = breaker.getLevel().getBlockState(offset);
+
         PoseStack.Pose pose = matrixStackIn.last();
-        VertexConsumer vertexconsumer1 = new SheetedDecalTextureGenerator(Minecraft.getInstance().renderBuffers().crumblingBufferSource().getBuffer(ModelBakery.DESTROY_TYPES.get(Math.min(9, (int) (breaker.progress.get() * 9)))), pose, 1.0F);
-        matrixStackIn.translate(norm.getX(), norm.getY(), norm.getZ());
-        Minecraft.getInstance().getBlockRenderer().renderBreakingTexture(state, off, breaker.getLevel(), matrixStackIn, vertexconsumer1);
-        Minecraft.getInstance().renderBuffers().crumblingBufferSource().endBatch();
+
+        VertexConsumer vertexconsumer1 = new SheetedDecalTextureGenerator(Minecraft.getInstance().renderBuffers().crumblingBufferSource().getBuffer(ModelBakery.DESTROY_TYPES.get((int) (breaker.progress.get() * 9))), pose, 1.0F);
+
+        matrixStackIn.translate(breaking.getStepX(), 0, breaking.getStepZ());
+
+        Minecraft.getInstance().getBlockRenderer().renderBreakingTexture(state, offset, breaker.getLevel(), matrixStackIn, vertexconsumer1, level().getModelData(offset));
+        //Minecraft.getInstance().renderBuffers().crumblingBufferSource().endBatch();
         matrixStackIn.popPose();
     }
 }
