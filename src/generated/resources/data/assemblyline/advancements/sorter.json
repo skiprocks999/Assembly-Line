@@ -1,13 +1,12 @@
 {
   "parent": "assemblyline:root",
+  "__author": "pyro206",
   "criteria": {
     "HasSorterBelt": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "assemblyline:sorterbelt"
-            ]
+            "items": "assemblyline:sorterbelt"
           }
         ]
       },
@@ -15,17 +14,14 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "description": {
       "color": "gray",
       "translate": "advancement.assemblyline.sorter.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
-      "item": "assemblyline:sorterbelt"
+      "count": 1,
+      "id": "assemblyline:sorterbelt"
     },
-    "show_toast": true,
     "title": {
       "color": "aqua",
       "translate": "advancement.assemblyline.sorter.title"
@@ -35,6 +31,5 @@
     [
       "HasSorterBelt"
     ]
-  ],
-  "sends_telemetry_event": false
+  ]
 }

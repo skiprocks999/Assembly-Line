@@ -1,13 +1,12 @@
 {
   "parent": "assemblyline:root",
+  "__author": "pyro206",
   "criteria": {
     "HasDetector": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "assemblyline:detector"
-            ]
+            "items": "assemblyline:detector"
           }
         ]
       },
@@ -15,17 +14,15 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "description": {
       "color": "gray",
       "translate": "advancement.assemblyline.detector.desc"
     },
     "frame": "challenge",
-    "hidden": false,
     "icon": {
-      "item": "assemblyline:detector"
+      "count": 1,
+      "id": "assemblyline:detector"
     },
-    "show_toast": true,
     "title": {
       "bold": true,
       "color": "dark_red",
@@ -38,6 +35,5 @@
     [
       "HasDetector"
     ]
-  ],
-  "sends_telemetry_event": false
+  ]
 }

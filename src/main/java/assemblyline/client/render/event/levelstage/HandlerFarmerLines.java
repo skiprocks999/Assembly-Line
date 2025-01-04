@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import net.minecraft.client.DeltaTracker;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,7 +23,6 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderLevelStageEvent.Stage;
 
 public class HandlerFarmerLines extends AbstractLevelStageHandler {
 
@@ -30,7 +31,7 @@ public class HandlerFarmerLines extends AbstractLevelStageHandler {
 	private final HashMap<BlockPos, Pair<Color[], List<AABB>>> farmerLines = new HashMap<>();
 
 	@Override
-	public void render(Camera camera, Frustum frustum, LevelRenderer renderer, PoseStack stack, Matrix4f projectionMatrix, Minecraft minecraft, int renderTick, float partialTick) {
+	public void render(Camera camera, Frustum frustum, LevelRenderer levelRenderer, PoseStack stack, Matrix4f matrix4f, Minecraft minecraft, int renderTick, DeltaTracker deltaTracker) {
 
 		stack.pushPose();
 
@@ -57,8 +58,8 @@ public class HandlerFarmerLines extends AbstractLevelStageHandler {
 	}
 
 	@Override
-	public boolean shouldRender(Stage stage) {
-		return stage == Stage.AFTER_TRIPWIRE_BLOCKS;
+	public boolean shouldRender(RenderLevelStageEvent.Stage stage) {
+		return stage == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS;
 	}
 
 	@Override

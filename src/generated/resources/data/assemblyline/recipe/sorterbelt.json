@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "assemblyline:conveyorbelt"
+    },
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "W": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    "WWW",
+    "HCH"
+  ],
+  "result": {
+    "count": 1,
+    "id": "assemblyline:sorterbelt"
+  }
+}

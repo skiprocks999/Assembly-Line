@@ -1,56 +1,36 @@
 package assemblyline.registers;
 
-import static assemblyline.registers.AssemblyLineBlocks.blockAutocrafter;
-import static assemblyline.registers.AssemblyLineBlocks.blockBlockBreaker;
-import static assemblyline.registers.AssemblyLineBlocks.blockBlockPlacer;
-import static assemblyline.registers.AssemblyLineBlocks.blockConveyorBelt;
-import static assemblyline.registers.AssemblyLineBlocks.blockCrate;
-import static assemblyline.registers.AssemblyLineBlocks.blockCrateLarge;
-import static assemblyline.registers.AssemblyLineBlocks.blockCrateMedium;
-import static assemblyline.registers.AssemblyLineBlocks.blockDetector;
-import static assemblyline.registers.AssemblyLineBlocks.blockFarmer;
-import static assemblyline.registers.AssemblyLineBlocks.blockMobGrinder;
-import static assemblyline.registers.AssemblyLineBlocks.blockRancher;
-import static assemblyline.registers.AssemblyLineBlocks.blockSorterBelt;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import assemblyline.References;
+import assemblyline.common.block.subtype.SubtypeAssemblyMachine;
 import electrodynamics.api.creativetab.CreativeTabSupplier;
+import electrodynamics.api.registration.BulkDeferredHolder;
 import electrodynamics.common.blockitem.types.BlockItemDescriptable;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class AssemblyLineItems {
 
-	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, References.ID);
+	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, References.ID);
 
-	static {
-		ITEMS.register("conveyorbelt", () -> new BlockItemDescriptable(() -> blockConveyorBelt, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
-		ITEMS.register("sorterbelt", () -> new BlockItemDescriptable(() -> blockSorterBelt, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
-		ITEMS.register("detector", () -> new BlockItemDescriptable(() -> blockDetector, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
-		ITEMS.register("crate", () -> new BlockItemDescriptable(() -> blockCrate, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
-		ITEMS.register("cratemedium", () -> new BlockItemDescriptable(() -> blockCrateMedium, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
-		ITEMS.register("cratelarge", () -> new BlockItemDescriptable(() -> blockCrateLarge, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
-		ITEMS.register("autocrafter", () -> new BlockItemDescriptable(() -> blockAutocrafter, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
-		ITEMS.register("blockbreaker", () -> new BlockItemDescriptable(() -> blockBlockBreaker, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
-		ITEMS.register("blockplacer", () -> new BlockItemDescriptable(() -> blockBlockPlacer, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
-		ITEMS.register("rancher", () -> new BlockItemDescriptable(() -> blockRancher, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
-		ITEMS.register("mobgrinder", () -> new BlockItemDescriptable(() -> blockMobGrinder, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
-		ITEMS.register("farmer", () -> new BlockItemDescriptable(() -> blockFarmer, new Properties(), () -> AssemblyLineCreativeTabs.MAIN.get()));
+	public static final DeferredHolder<Item, BlockItemDescriptable> ITEM_CONVEYORBELT = ITEMS.register("conveyorbelt", () -> new BlockItemDescriptable(AssemblyLineBlocks.BLOCK_CONVEYORBELT.get(), new Properties(), AssemblyLineCreativeTabs.MAIN));
+	public static final DeferredHolder<Item, BlockItemDescriptable> ITEM_SORTERBELT = ITEMS.register("sorterbelt", () -> new BlockItemDescriptable(AssemblyLineBlocks.BLOCK_SORTERBELT.get(), new Properties(), AssemblyLineCreativeTabs.MAIN));
+	public static final DeferredHolder<Item, BlockItemDescriptable> ITEM_DETECTOR = ITEMS.register("detector", () -> new BlockItemDescriptable(AssemblyLineBlocks.BLOCK_DETECTOR.get(), new Properties(), AssemblyLineCreativeTabs.MAIN));
 
-	}
+	public static final BulkDeferredHolder<Item, BlockItemDescriptable, SubtypeAssemblyMachine> ITEMS_ASSEMBLYMACHINE = new BulkDeferredHolder<>(SubtypeAssemblyMachine.values(), subtype -> ITEMS.register(subtype.tag(), () -> new BlockItemDescriptable(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getValue(subtype), new Properties(), AssemblyLineCreativeTabs.MAIN)));
 
-	@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = References.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-	private static class ElectroCreativeRegistry {
+	@EventBusSubscriber(value = Dist.CLIENT, modid = References.ID, bus = EventBusSubscriber.Bus.MOD)
+	private static class AssemblyCreativeRegistry {
 
 		@SubscribeEvent
 		public static void registerItems(BuildCreativeModeTabContentsEvent event) {

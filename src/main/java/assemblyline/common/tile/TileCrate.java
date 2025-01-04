@@ -2,8 +2,9 @@ package assemblyline.common.tile;
 
 import java.util.HashSet;
 
-import assemblyline.registers.AssemblyLineBlockTypes;
+import assemblyline.common.block.subtype.SubtypeAssemblyMachine;
 import assemblyline.registers.AssemblyLineBlocks;
+import assemblyline.registers.AssemblyLineTiles;
 import electrodynamics.prefab.tile.GenericTile;
 import electrodynamics.prefab.tile.components.IComponentType;
 import electrodynamics.prefab.tile.components.type.ComponentInventory;
@@ -14,30 +15,28 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 public class TileCrate extends GenericTile {
 	
 	public final int size;
 
 	public TileCrate(BlockPos worldPosition, BlockState blockState) {
-		super(AssemblyLineBlockTypes.TILE_CRATE.get(), worldPosition, blockState);
-		
-		//TODO unique tiles
-		
+		super(AssemblyLineTiles.TILE_CRATE.get(), worldPosition, blockState);
+
 		int size = 64;
-		
-		if(blockState.is(AssemblyLineBlocks.blockCrate)) {
+
+		if(blockState.is(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getValue(SubtypeAssemblyMachine.crate))) {
 			size = 64;
-		} else if (blockState.is(AssemblyLineBlocks.blockCrateMedium)) {
+		} else if (blockState.is(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getValue(SubtypeAssemblyMachine.cratemedium))) {
 			size = 128;
-		} else if (blockState.is(AssemblyLineBlocks.blockCrateLarge)) {
+		} else if (blockState.is(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getValue(SubtypeAssemblyMachine.cratelarge))) {
 			size = 256;
 		}
 		
@@ -93,23 +92,37 @@ public class TileCrate extends GenericTile {
 	}
 
 	@Override
-	public InteractionResult use(Player player, InteractionHand hand, BlockHitResult result) {
-		if (!player.isShiftKeyDown()) {
-			player.setItemInHand(hand, HopperBlockEntity.addItem(player.getInventory(), getComponent(IComponentType.Inventory), player.getItemInHand(hand), Direction.EAST));
-			return InteractionResult.CONSUME;
+	public ItemInteractionResult useWithItem(ItemStack used, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (!player.isShiftKeyDown() && !player.getItemInHand(hand).isEmpty()) {
+
+			if(!level.isClientSide) player.setItemInHand(hand, HopperBlockEntity.addItem(player.getInventory(), getComponent(IComponentType.Inventory), player.getItemInHand(hand), Direction.EAST));
+
+			return ItemInteractionResult.CONSUME;
 		}
+
+		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+	}
+
+	@Override
+	public InteractionResult useWithoutItem(Player player, BlockHitResult hit) {
 		ComponentInventory inv = getComponent(IComponentType.Inventory);
+
 		for (int i = 0; i < inv.getContainerSize(); i++) {
-			ItemStack stack = inv.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP, null).resolve().get().extractItem(i, inv.getMaxStackSize(), level.isClientSide());
-			if (!stack.isEmpty()) {
-				if (!level.isClientSide()) {
-					ItemEntity item = new ItemEntity(level, player.getX() + 0.5, player.getY() + 0.5, player.getZ() + 0.5, stack);
-					level.addFreshEntity(item);
-				}
-				return InteractionResult.CONSUME;
+			ItemStack stack = inv.getItem(i);
+			if(stack.isEmpty()) {
+				continue;
 			}
+
+			if (!level.isClientSide()) {
+
+				ItemEntity item = new ItemEntity(level, player.getX() + 0.5, player.getY() + 0.5, player.getZ() + 0.5, stack.copy());
+
+				level.addFreshEntity(item);
+
+				inv.removeItem(i, stack.getCount());
+			}
+			return InteractionResult.CONSUME;
 		}
 		return InteractionResult.FAIL;
 	}
-
 }

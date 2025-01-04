@@ -1,5 +1,6 @@
 package assemblyline.client.render.tile;
 
+import assemblyline.common.settings.Constants;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import assemblyline.client.ClientRegister;
@@ -17,47 +18,48 @@ import net.minecraft.client.resources.model.BakedModel;
 
 public class RenderMobGrinder extends AbstractTileRenderer<TileMobGrinder> {
 
-	public RenderMobGrinder(BlockEntityRendererProvider.Context context) {
-		super(context);
-	}
+    public RenderMobGrinder(BlockEntityRendererProvider.Context context) {
+        super(context);
+    }
 
-	@Override
-	public void render(TileMobGrinder grinder, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    @Override
+    public void render(TileMobGrinder grinder, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
 
-		double progress = 0;
-		if (grinder.<ComponentElectrodynamic>getComponent(IComponentType.Electrodynamic).getJoulesStored() >= grinder.getUsage()) {
-			progress = grinder.getLevel().getDayTime() + partialTicks;
-		}
+        double progress = 0;
 
-		BakedModel ibakedmodel = Minecraft.getInstance().getModelManager().getModel(ClientRegister.MODEL_MOBGRINDERSIDEWHEEL);
-		matrixStackIn.pushPose();
-		RenderingUtils.prepareRotationalTileModel(grinder, matrixStackIn);
-		matrixStackIn.mulPose(MathUtils.rotQuaternionDeg(0, 0, 90));
-		// matrixStackIn.mulPose(new Quaternion(0, 0, 90, true));
-		matrixStackIn.translate(1.0 / 16.0, 6.0 / 16.0, 2.5 / 16.0);
-		matrixStackIn.mulPose(MathUtils.rotQuaternionDeg((float) -progress, 0, 0));
-		// matrixStackIn.mulPose(new Quaternion((float) -progress, 0, 0, true));
-		RenderingUtils.renderModel(ibakedmodel, grinder, RenderType.solid(), matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-		matrixStackIn.popPose();
-		matrixStackIn.pushPose();
-		RenderingUtils.prepareRotationalTileModel(grinder, matrixStackIn);
-		matrixStackIn.mulPose(MathUtils.rotQuaternionDeg(0, 0, 90));
-		// matrixStackIn.mulPose(new Quaternion(0, 0, 90, true));
-		matrixStackIn.translate(1.0 / 16.0, 6.0 / 16.0, -2.5 / 16.0);
-		matrixStackIn.mulPose(MathUtils.rotQuaternionDeg((float) progress, 0, 0));
-		// matrixStackIn.mulPose(new Quaternion((float) progress, 0, 0, true));
-		RenderingUtils.renderModel(ibakedmodel, grinder, RenderType.solid(), matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-		matrixStackIn.popPose();
-		ibakedmodel = Minecraft.getInstance().getModelManager().getModel(ClientRegister.MODEL_MOBGRINDERCENTERWHEEL);
-		matrixStackIn.pushPose();
-		RenderingUtils.prepareRotationalTileModel(grinder, matrixStackIn);
-		matrixStackIn.mulPose(MathUtils.rotQuaternionDeg(0, 0, 90));
-		// matrixStackIn.mulPose(new Quaternion(0, 0, 90, true));
-		matrixStackIn.translate(1.0 / 16.0, 6.0 / 16.0, 0);
-		matrixStackIn.mulPose(MathUtils.rotQuaternionDeg((float) progress, 0, 0));
-		// matrixStackIn.mulPose(new Quaternion((float) progress, 0, 0, true));
-		RenderingUtils.renderModel(ibakedmodel, grinder, RenderType.solid(), matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-		matrixStackIn.popPose();
+        if (grinder.<ComponentElectrodynamic>getComponent(IComponentType.Electrodynamic).getJoulesStored() >= Constants.MOBGRINDER_USAGE * grinder.powerUsageMultiplier.get()) {
+            progress = System.currentTimeMillis() % 150 / 150.0 * 360.0;
+        }
 
-	}
+        BakedModel ibakedmodel = Minecraft.getInstance().getModelManager().getModel(ClientRegister.MODEL_MOBGRINDERSIDEWHEEL);
+        matrixStackIn.pushPose();
+        RenderingUtils.prepareRotationalTileModel(grinder, matrixStackIn);
+        matrixStackIn.mulPose(MathUtils.rotQuaternionDeg(0, 0, 90));
+        // matrixStackIn.mulPose(new Quaternion(0, 0, 90, true));
+        matrixStackIn.translate(1.0 / 16.0, 6.0 / 16.0, 2.5 / 16.0);
+        matrixStackIn.mulPose(MathUtils.rotQuaternionDeg((float) -progress, 0, 0));
+        // matrixStackIn.mulPose(new Quaternion((float) -progress, 0, 0, true));
+        RenderingUtils.renderModel(ibakedmodel, grinder, RenderType.solid(), matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
+        matrixStackIn.popPose();
+        matrixStackIn.pushPose();
+        RenderingUtils.prepareRotationalTileModel(grinder, matrixStackIn);
+        matrixStackIn.mulPose(MathUtils.rotQuaternionDeg(0, 0, 90));
+        // matrixStackIn.mulPose(new Quaternion(0, 0, 90, true));
+        matrixStackIn.translate(1.0 / 16.0, 6.0 / 16.0, -2.5 / 16.0);
+        matrixStackIn.mulPose(MathUtils.rotQuaternionDeg((float) progress, 0, 0));
+        // matrixStackIn.mulPose(new Quaternion((float) progress, 0, 0, true));
+        RenderingUtils.renderModel(ibakedmodel, grinder, RenderType.solid(), matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
+        matrixStackIn.popPose();
+        ibakedmodel = Minecraft.getInstance().getModelManager().getModel(ClientRegister.MODEL_MOBGRINDERCENTERWHEEL);
+        matrixStackIn.pushPose();
+        RenderingUtils.prepareRotationalTileModel(grinder, matrixStackIn);
+        matrixStackIn.mulPose(MathUtils.rotQuaternionDeg(0, 0, 90));
+        // matrixStackIn.mulPose(new Quaternion(0, 0, 90, true));
+        matrixStackIn.translate(1.0 / 16.0, 6.0 / 16.0, 0);
+        matrixStackIn.mulPose(MathUtils.rotQuaternionDeg((float) progress, 0, 0));
+        // matrixStackIn.mulPose(new Quaternion((float) progress, 0, 0, true));
+        RenderingUtils.renderModel(ibakedmodel, grinder, RenderType.solid(), matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
+        matrixStackIn.popPose();
+
+    }
 }

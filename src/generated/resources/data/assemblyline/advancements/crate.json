@@ -1,13 +1,12 @@
 {
   "parent": "assemblyline:root",
+  "__author": "pyro206",
   "criteria": {
     "HasCrate": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "assemblyline:crate"
-            ]
+            "items": "assemblyline:crate"
           }
         ]
       },
@@ -15,17 +14,14 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "description": {
       "color": "gray",
       "translate": "advancement.assemblyline.crate.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
-      "item": "assemblyline:crate"
+      "count": 1,
+      "id": "assemblyline:crate"
     },
-    "show_toast": true,
     "title": {
       "bold": true,
       "color": "gold",
@@ -36,6 +32,5 @@
     [
       "HasCrate"
     ]
-  ],
-  "sends_telemetry_event": false
+  ]
 }

@@ -4,7 +4,7 @@ import java.util.List;
 
 import assemblyline.common.inventory.container.ContainerAutocrafter;
 import assemblyline.common.settings.Constants;
-import assemblyline.registers.AssemblyLineBlockTypes;
+import assemblyline.registers.AssemblyLineTiles;
 import electrodynamics.prefab.tile.GenericTile;
 import electrodynamics.prefab.tile.components.IComponentType;
 import electrodynamics.prefab.tile.components.type.ComponentContainerProvider;
@@ -12,27 +12,36 @@ import electrodynamics.prefab.tile.components.type.ComponentElectrodynamic;
 import electrodynamics.prefab.tile.components.type.ComponentInventory;
 import electrodynamics.prefab.tile.components.type.ComponentInventory.InventoryBuilder;
 import electrodynamics.prefab.tile.components.type.ComponentTickable;
+import electrodynamics.prefab.utilities.BlockEntityUtils;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.common.util.RecipeMatcher;
 
 public class TileAutocrafter extends GenericTile {
 
 	// public boolean isPowered = false;
 
 	public TileAutocrafter(BlockPos worldPosition, BlockState blockState) {
-		super(AssemblyLineBlockTypes.TILE_AUTOCRAFTER.get(), worldPosition, blockState);
+		super(AssemblyLineTiles.TILE_AUTOCRAFTER.get(), worldPosition, blockState);
 		addComponent(new ComponentTickable(this).tickServer(this::tickServer));
-		addComponent(new ComponentElectrodynamic(this, false, true).maxJoules(Constants.AUTOCRAFTER_USAGE * 20).setInputDirections(Direction.values()));
-		addComponent(new ComponentInventory(this, InventoryBuilder.newInv().inputs(9).outputs(1)).setSlotsByDirection(Direction.DOWN, 9).setSlotsByDirection(Direction.UP, 1, 3, 4, 5, 7).setSlotsByDirection(Direction.SOUTH, 6, 7, 8).setSlotsByDirection(Direction.NORTH, 0, 1, 2).setSlotsByDirection(Direction.WEST, 2, 5, 8).setSlotsByDirection(Direction.EAST, 0, 3, 6));
+		addComponent(new ComponentElectrodynamic(this, false, true).maxJoules(Constants.AUTOCRAFTER_USAGE * 20).setInputDirections(BlockEntityUtils.MachineDirection.values()));
+		addComponent(new ComponentInventory(this, InventoryBuilder.newInv().inputs(9).outputs(1))
+				//
+				.setSlotsByDirection(BlockEntityUtils.MachineDirection.BOTTOM, 9)
+				//
+				.setSlotsByDirection(BlockEntityUtils.MachineDirection.TOP, 1, 3, 4, 5, 7)
+				//
+				.setSlotsByDirection(BlockEntityUtils.MachineDirection.BACK, 6, 7, 8)
+				//
+				.setSlotsByDirection(BlockEntityUtils.MachineDirection.FRONT, 0, 1, 2)
+				//
+				.setSlotsByDirection(BlockEntityUtils.MachineDirection.LEFT, 2, 5, 8)
+				//
+				.setSlotsByDirection(BlockEntityUtils.MachineDirection.RIGHT, 0, 3, 6));
 		addComponent(new ComponentContainerProvider("container.autocrafter", this).createMenu((id, player) -> new ContainerAutocrafter(id, player, getComponent(IComponentType.Inventory), getCoordsArray())));
 	}
 
@@ -88,7 +97,7 @@ public class TileAutocrafter extends GenericTile {
 				}
 			}
 		}
-		return i == shaped.getIngredients().size() && (isSimple ? stackedcontents.canCraft(shaped, (IntList) null) : net.minecraftforge.common.util.RecipeMatcher.findMatches(inputs, shaped.getIngredients()) != null);
+		return i == shaped.getIngredients().size() && (isSimple ? stackedcontents.canCraft(shaped, (IntList) null) : RecipeMatcher.findMatches(inputs, shaped.getIngredients()) != null);
 	}
 
 	public void tickServer(ComponentTickable tick) {
@@ -103,17 +112,17 @@ public class TileAutocrafter extends GenericTile {
 					}
 				}
 				if (canContinue) {
-					List<CraftingRecipe> recipes = level.getServer().getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING);
+					List<RecipeHolder<CraftingRecipe>> recipes = level.getServer().getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING);
 					ItemStack result = ItemStack.EMPTY;
 					canContinue = false;
-					for (CraftingRecipe recipe : recipes) {
-						result = recipe.getResultItem(level.registryAccess());
-						if (recipe instanceof ShapedRecipe shapedRecipe) {
+					for (RecipeHolder<CraftingRecipe> recipe : recipes) {
+						result = recipe.value().getResultItem(level.registryAccess());
+						if (recipe.value() instanceof ShapedRecipe shapedRecipe) {
 							if (shapedMatches(inventory, shapedRecipe)) {
 								canContinue = true;
 								break;
 							}
-						} else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
+						} else if (recipe.value() instanceof ShapelessRecipe shapelessRecipe) {
 							if (shapelessMatches(inventory, shapelessRecipe)) {
 								canContinue = true;
 								break;

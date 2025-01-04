@@ -1,77 +1,73 @@
 package assemblyline.datagen.server;
 
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 import assemblyline.References;
+import assemblyline.common.block.subtype.SubtypeAssemblyMachine;
 import assemblyline.prefab.utils.AssemblyTextUtils;
-import assemblyline.registers.AssemblyLineBlocks;
-import electrodynamics.datagen.server.ElectrodynamicsAdvancementProvider;
+import assemblyline.registers.AssemblyLineItems;
+import electrodynamics.datagen.server.advancement.ElectrodynamicsAdvancementProvider;
 import electrodynamics.datagen.utils.AdvancementBuilder.AdvancementBackgrounds;
 import net.minecraft.ChatFormatting;
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.FrameType;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraft.data.PackOutput;
 
 public class AssemblyLineAdvancementProvider extends ElectrodynamicsAdvancementProvider {
 
-	public AssemblyLineAdvancementProvider() {
-		super(References.ID);
+	public AssemblyLineAdvancementProvider(PackOutput output, CompletableFuture<Provider> registries) {
+		super(output, registries, References.ID);
 	}
 
 	@Override
-	public void generate(Provider registries, Consumer<Advancement> consumer, ExistingFileHelper existingFileHelper) {
+	public void generate(HolderLookup.Provider registries) {
 
 		// Credit to pyro206 for original JSON
-		Advancement root = advancement("root")
+		AdvancementHolder root = advancement("root")
 				//
-				.display(AssemblyLineBlocks.blockConveyorBelt.asItem(), AssemblyTextUtils.advancement("root.title").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD, ChatFormatting.ITALIC), AssemblyTextUtils.advancement("root.desc").withStyle(ChatFormatting.GRAY), AdvancementBackgrounds.STONE, FrameType.TASK, true, true, false)
+				.display(AssemblyLineItems.ITEM_CONVEYORBELT.get(), AssemblyTextUtils.advancement("root.title").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD, ChatFormatting.ITALIC), AssemblyTextUtils.advancement("root.desc").withStyle(ChatFormatting.GRAY), AdvancementBackgrounds.STONE, AdvancementType.TASK, true, true, false)
 				//
-				.addCriterion("getaconveyerbelt", InventoryChangeTrigger.TriggerInstance.hasItems(AssemblyLineBlocks.blockConveyorBelt.asItem()))
+				.addCriterion("getaconveyerbelt", InventoryChangeTrigger.TriggerInstance.hasItems(AssemblyLineItems.ITEM_CONVEYORBELT.get()))
 				//
 				.author("pyro206")
 				//
-				.save(consumer);
+				.build();
 
 		// Credit to pyro206 for original JSON
 		advancement("sorter")
 				//
-				.display(AssemblyLineBlocks.blockSorterBelt.asItem(), AssemblyTextUtils.advancement("sorter.title").withStyle(ChatFormatting.AQUA), AssemblyTextUtils.advancement("sorter.desc").withStyle(ChatFormatting.GRAY), AdvancementBackgrounds.NONE, FrameType.TASK, true, true, false)
+				.display(AssemblyLineItems.ITEM_SORTERBELT.get(), AssemblyTextUtils.advancement("sorter.title").withStyle(ChatFormatting.AQUA), AssemblyTextUtils.advancement("sorter.desc").withStyle(ChatFormatting.GRAY), AdvancementBackgrounds.NONE, AdvancementType.TASK, true, true, false)
 				//
-				.addCriterion("HasSorterBelt", InventoryChangeTrigger.TriggerInstance.hasItems(AssemblyLineBlocks.blockSorterBelt.asItem()))
+				.addCriterion("HasSorterBelt", InventoryChangeTrigger.TriggerInstance.hasItems(AssemblyLineItems.ITEM_SORTERBELT.get()))
 				//
 				.parent(root)
 				//
-				.author("pyro206")
-				//
-				.save(consumer);
+				.author("pyro206");
 
 		// Credit to pyro206 for original JSON
 		advancement("detector")
 				//
-				.display(AssemblyLineBlocks.blockDetector.asItem(), AssemblyTextUtils.advancement("detector.title").withStyle(ChatFormatting.DARK_RED, ChatFormatting.BOLD, ChatFormatting.ITALIC, ChatFormatting.UNDERLINE), AssemblyTextUtils.advancement("detector.desc").withStyle(ChatFormatting.GRAY), AdvancementBackgrounds.NONE, FrameType.CHALLENGE, true, true, false)
+				.display(AssemblyLineItems.ITEM_DETECTOR.get(), AssemblyTextUtils.advancement("detector.title").withStyle(ChatFormatting.DARK_RED, ChatFormatting.BOLD, ChatFormatting.ITALIC, ChatFormatting.UNDERLINE), AssemblyTextUtils.advancement("detector.desc").withStyle(ChatFormatting.GRAY), AdvancementBackgrounds.NONE, AdvancementType.CHALLENGE, true, true, false)
 				//
-				.addCriterion("HasDetector", InventoryChangeTrigger.TriggerInstance.hasItems(AssemblyLineBlocks.blockDetector.asItem()))
+				.addCriterion("HasDetector", InventoryChangeTrigger.TriggerInstance.hasItems(AssemblyLineItems.ITEM_DETECTOR.get()))
 				//
 				.parent(root)
 				//
-				.author("pyro206")
-				//
-				.save(consumer);
+				.author("pyro206");
 
 		// Credit to pyro206 for original JSON
 		advancement("crate")
 				//
-				.display(AssemblyLineBlocks.blockCrate.asItem(), AssemblyTextUtils.advancement("crate.title").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD), AssemblyTextUtils.advancement("crate.desc").withStyle(ChatFormatting.GRAY), AdvancementBackgrounds.NONE, FrameType.TASK, true, true, false)
+				.display(AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.crate), AssemblyTextUtils.advancement("crate.title").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD), AssemblyTextUtils.advancement("crate.desc").withStyle(ChatFormatting.GRAY), AdvancementBackgrounds.NONE, AdvancementType.TASK, true, true, false)
 				//
-				.addCriterion("HasCrate", InventoryChangeTrigger.TriggerInstance.hasItems(AssemblyLineBlocks.blockCrate.asItem()))
+				.addCriterion("HasCrate", InventoryChangeTrigger.TriggerInstance.hasItems(AssemblyLineItems.ITEMS_ASSEMBLYMACHINE.getValue(SubtypeAssemblyMachine.crate)))
 				//
 				.parent(root)
 				//
-				.author("pyro206")
-				//
-				.save(consumer);
+				.author("pyro206");
 
 	}
 
