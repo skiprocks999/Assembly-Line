@@ -28,7 +28,7 @@ public class RenderMobGrinder extends AbstractTileRenderer<TileMobGrinder> {
         double progress = 0;
 
         if (grinder.<ComponentElectrodynamic>getComponent(IComponentType.Electrodynamic).getJoulesStored() >= Constants.MOBGRINDER_USAGE * grinder.powerUsageMultiplier.get()) {
-            progress = System.currentTimeMillis() % 400 / 400.0 * 360.0;
+            progress = System.currentTimeMillis() % 150 / 150.0 * 360.0;
         }
 
         BakedModel ibakedmodel = Minecraft.getInstance().getModelManager().getModel(ClientRegister.MODEL_MOBGRINDERSIDEWHEEL);
