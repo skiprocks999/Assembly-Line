@@ -551,16 +551,20 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
 
     @Override
     public void onEntityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (entity instanceof ItemEntity item && entity.tickCount > 5) {
+        if (entity instanceof ItemEntity item) {
 
-            ItemStack stack = item.getItem().copy();
+            if(entity.tickCount > 5) {
 
-            ItemStack inserted = addItemOnBelt(stack, getDefaultItemLocation());
+                ItemStack stack = item.getItem().copy();
 
-            stack.shrink(inserted.getCount());
+                ItemStack inserted = addItemOnBelt(stack, getDefaultItemLocation());
 
-            item.setItem(stack);
-        } else if (level.isClientSide()) {
+                stack.shrink(inserted.getCount());
+
+                item.setItem(stack);
+
+            }
+        } else if (level.isClientSide() && running.get()) {
             Vector3f dirVec = getDirectionVector();
             dirVec = dirVec.mul(1.0F / 16.0F);
             dirVec = dirVec.mul((float) properties.conveyorClass.speed);
