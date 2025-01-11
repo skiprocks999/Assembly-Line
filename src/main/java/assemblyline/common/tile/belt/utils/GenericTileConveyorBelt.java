@@ -17,7 +17,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -74,12 +73,12 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
     };
 
 
-    public final Property<Integer> currentSpread = property(new Property<>(PropertyTypes.INTEGER, "currentSpread", 0)).setNoUpdateServer();
+    public final Property<Integer> currentSpread = property(new Property<>(PropertyTypes.INTEGER, "currentspread", 0)).setNoUpdateServer();
     public final Property<Boolean> running = property(new Property<>(PropertyTypes.BOOLEAN, "running", false)).setNoUpdateServer();
-    public final Property<Boolean> isQueueReady = property(new Property<>(PropertyTypes.BOOLEAN, "isQueueReady", false)).setNoUpdateServer();
+    public final Property<Boolean> isQueueReady = property(new Property<>(PropertyTypes.BOOLEAN, "isqueueready", false)).setNoUpdateServer();
     public final Property<Boolean> waiting = property(new Property<>(PropertyTypes.BOOLEAN, "waiting", false)).setNoUpdateServer();
-    public final Property<Location> itemLocation = property(new Property<>(PropertyTypes.LOCATION, "conveyorObject", new Location(0, 0, 0))).setNoUpdateServer();
-    public final Property<Integer> conveyorType = property(new Property<>(PropertyTypes.INTEGER, "conveyorType", ConveyorType.HORIZONTAL.ordinal())).setNoUpdateServer();
+    public final Property<Location> itemLocation = property(new Property<>(PropertyTypes.LOCATION, "conveyorobject", new Location(0, 0, 0))).setNoUpdateServer();
+    public final Property<Integer> conveyorType = property(new Property<>(PropertyTypes.INTEGER, "conveyortype", ConveyorType.HORIZONTAL.ordinal())).setNoUpdateServer();
     public final Property<Boolean> isPusher = property(new Property<>(PropertyTypes.BOOLEAN, "pusher", false)).setNoUpdateServer();
     public final Property<Boolean> isPuller = property(new Property<>(PropertyTypes.BOOLEAN, "puller", false)).setNoUpdateServer();
 
@@ -89,6 +88,8 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
     private boolean hasDroppedThisTick = false; // There is a dupe bug I found. Unknown how it happens but this fixes it
 
     private final ConveyorBeltProperties properties;
+
+    public final Property<Boolean> canMove = property(new Property<>(PropertyTypes.BOOLEAN, "canmove", false)).setNoUpdateServer();
 
     public GenericTileConveyorBelt(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState, ConveyorBeltProperties properties) {
         super(type, worldPosition, blockState);
@@ -213,18 +214,48 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
 
                             }
 
-                        } else {
+                        } else if(canMove.get()) {
 
-                            dropItem(stackOnBelt, move);
+                            Vector3f local = getLocalItemLocationVector();
+
+                            Direction dir = getDirectionForNext();
+
+                            float stepX = dir.getStepX();
+                            float stepZ = dir.getStepZ();
+
+                            float absX = Math.abs(local.x());
+                            float absZ = Math.abs(local.z());
+
+                            boolean xIs = stepX != 0 && stepX < 0 ? absX <= 0.2F : absX >= 0.8F;
+                            boolean zIs = stepZ != 0 && stepZ < 0 ? absZ <= 0.2F : absZ >= 0.8F;
+
+                            if(xIs || zIs) {
+                                dropItem(stackOnBelt, move);
+                            }
 
                         }
                     }
 
-                } else {
-                    dropItem(stackOnBelt, move);
+                } else if(canMove.get()) {
+                    Vector3f local = getLocalItemLocationVector();
+
+                    Direction dir = getDirectionForNext();
+
+                    float stepX = dir.getStepX();
+                    float stepZ = dir.getStepZ();
+
+                    float absX = Math.abs(local.x());
+                    float absZ = Math.abs(local.z());
+
+                    boolean xIs = stepX != 0 && stepX < 0 ? absX <= 0.2F : absX >= 0.8F;
+                    boolean zIs = stepZ != 0 && stepZ < 0 ? absZ <= 0.2F : absZ >= 0.8F;
+
+                    if(xIs || zIs) {
+                        dropItem(stackOnBelt, move);
+                    }
                 }
 
-                if (!shouldTransfer) {
+                if (!shouldTransfer && canMove.get()) {
 
                     move.mul(1 / 16.0f);
 
@@ -268,6 +299,10 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
 
             running.set(currentSpread.get() > MIN_SPREAD && (!waiting.get() || isQueueReady.get()));
 
+        }
+
+        if (level.isClientSide()) {
+            return;
         }
 
         BlockEntity lastBlockEntity = level.getBlockEntity(worldPosition.relative(getDirectionForLast()));
@@ -319,10 +354,6 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
             }
         }
 
-        if (level.isClientSide()) {
-            return;
-        }
-
         int currSpread = currentSpread.get();
 
         int maxSpread = 0;
@@ -372,9 +403,24 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
 
     public boolean shouldTransfer(BlockEntity next, BlockPos conveyorItemPos) {
 
+        if(!level.isClientSide) {
+            canMove.set(true);
+        }
+
         Vector3f local = getLocalItemLocationVector();
 
         Vector3f direction = getDirectionVector();
+
+        Direction dir = getDirectionForNext();
+
+        float stepX = dir.getStepX();
+        float stepZ = dir.getStepZ();
+
+        float absX = Math.abs(local.x());
+        float absZ = Math.abs(local.z());
+
+        boolean xIs = stepX != 0 && stepX < 0 ? absX <= 0.2F : absX >= 0.8F;
+        boolean zIs = stepZ != 0 && stepZ < 0 ? absZ <= 0.2F : absZ >= 0.8F;
 
         float coordComponent = local.dot(direction);
         ConveyorType type = ConveyorType.values()[conveyorType.get()];
@@ -390,6 +436,19 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
 
             value = (beltType == ConveyorType.SLOPED_UP || beltType == ConveyorType.VERTICAL) ? 1 : 1.25f;
 
+        } else if(!(next instanceof GenericTileConveyorBelt) && next != null && level.getCapability(Capabilities.ItemHandler.BLOCK, next.getBlockPos(), next.getBlockState(), next, dir.getOpposite()) instanceof IItemHandler handler && (xIs || zIs)) {
+            if(level.isClientSide) {
+                return false;
+            }
+            ItemStack beltItem = getItemOnBelt().copy();
+            for(int i = 0; i < handler.getSlots(); i++) {
+                beltItem = handler.insertItem(i, getItemOnBelt(), true);
+                if(beltItem.isEmpty()) {
+                    return true;
+                }
+            }
+            canMove.set(false);
+            return false;
         }
 
         if (direction.x() + direction.y() + direction.z() > 0) {
@@ -415,7 +474,7 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
 
         if(beltItem.isEmpty()) {
 
-            setItemOnBelt(add);
+            setItemOnBelt(add.copy());
 
             inserted = true;
 
@@ -553,11 +612,11 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
     public void onEntityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (entity instanceof ItemEntity item) {
 
-            if(entity.tickCount > 5) {
+            if(entity.tickCount > 5 && !level.isClientSide) {
 
                 ItemStack stack = item.getItem().copy();
 
-                ItemStack inserted = addItemOnBelt(stack, getDefaultItemLocation());
+                ItemStack inserted = addItemOnBelt(stack, getDefaultItemLocation()).copy();
 
                 stack.shrink(inserted.getCount());
 
@@ -574,7 +633,9 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
 
     @Override
     public void onBlockDestroyed() {
-        Containers.dropContents(level, getBlockPos(), (ComponentInventory) getComponent(IComponentType.Inventory));
+        if(!level.isClientSide) {
+            Containers.dropContents(level, getBlockPos(), (ComponentInventory) getComponent(IComponentType.Inventory));
+        }
     }
 
     @Override
