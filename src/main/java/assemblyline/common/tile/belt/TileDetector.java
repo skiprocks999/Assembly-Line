@@ -3,6 +3,7 @@ package assemblyline.common.tile.belt;
 import java.util.List;
 import java.util.function.Predicate;
 
+import assemblyline.common.tile.belt.utils.GenericTileConveyorBelt;
 import assemblyline.registers.AssemblyLineTiles;
 import electrodynamics.prefab.tile.GenericTile;
 import electrodynamics.prefab.tile.components.type.ComponentTickable;
@@ -31,10 +32,20 @@ public class TileDetector extends GenericTile {
 		if (component.getTicks() % 4 == 0) {
 			return;
 		}
-		List<ItemEntity> entities = level.getEntities(EntityType.ITEM, new AABB(worldPosition.relative(getFacing())), (Predicate<ItemEntity>) t -> t != null && !t.getItem().isEmpty());
+		BlockPos relative = worldPosition.relative(getFacing());
+
+		List<ItemEntity> entities = level.getEntities(EntityType.ITEM, new AABB(relative), entity -> entity != null && !entity.getItem().isEmpty());
 		if (!entities.isEmpty()) {
 			if (!isPowered) {
 				isPowered = true;
+				level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
+			}
+		} else if (level.getBlockEntity(relative) instanceof GenericTileConveyorBelt belt) {
+			if(!isPowered && !belt.getItemOnBelt().isEmpty()) {
+				isPowered = true;
+				level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
+			} else if (isPowered) {
+				isPowered = false;
 				level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
 			}
 		} else if (isPowered) {

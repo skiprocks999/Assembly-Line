@@ -4,13 +4,13 @@
     "assemblyline:sorterbelt",
     "assemblyline:detector",
     "assemblyline:rancher",
-    "assemblyline:autocrafter",
     "assemblyline:mobgrinder",
-    "assemblyline:farmer",
-    "assemblyline:blockplacer",
-    "assemblyline:cratemedium",
-    "assemblyline:blockbreaker",
     "assemblyline:crate",
-    "assemblyline:cratelarge"
+    "assemblyline:farmer",
+    "assemblyline:cratemedium",
+    "assemblyline:blockplacer",
+    "assemblyline:cratelarge",
+    "assemblyline:autocrafter",
+    "assemblyline:blockbreaker"
   ]
 }
