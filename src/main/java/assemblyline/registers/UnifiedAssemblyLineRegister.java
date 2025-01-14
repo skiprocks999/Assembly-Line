@@ -4,6 +4,7 @@ import assemblyline.common.block.subtype.SubtypeAssemblyMachine;
 import assemblyline.prefab.utils.AssemblyTextUtils;
 import electrodynamics.common.blockitem.types.BlockItemDescriptable;
 import electrodynamics.prefab.utilities.ElectroTextUtils;
+import net.minecraft.ChatFormatting;
 import net.neoforged.bus.api.IEventBus;
 
 public class UnifiedAssemblyLineRegister {
@@ -21,10 +22,10 @@ public class UnifiedAssemblyLineRegister {
 		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.farmer), ElectroTextUtils.voltageTooltip(120));
 
 		// Misc
-		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCK_DETECTOR, AssemblyTextUtils.tooltip("detector"));
-		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.crate), AssemblyTextUtils.tooltip("crate"));
-		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.cratemedium), AssemblyTextUtils.tooltip("cratemedium"));
-		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.cratelarge), AssemblyTextUtils.tooltip("cratelarge"));
+		//BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCK_DETECTOR, AssemblyTextUtils.tooltip("detector").withStyle(ChatFormatting.DARK_GRAY));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.crate), AssemblyTextUtils.tooltip("crate").withStyle(ChatFormatting.DARK_GRAY));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.cratemedium), AssemblyTextUtils.tooltip("cratemedium").withStyle(ChatFormatting.DARK_GRAY));
+		BlockItemDescriptable.addDescription(AssemblyLineBlocks.BLOCKS_ASSEMBLYMACHINES.getHolder(SubtypeAssemblyMachine.cratelarge), AssemblyTextUtils.tooltip("cratelarge").withStyle(ChatFormatting.DARK_GRAY));
 	}
 
 	public static void register(IEventBus bus) {
