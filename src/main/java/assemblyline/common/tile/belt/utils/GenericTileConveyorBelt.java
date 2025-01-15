@@ -1,5 +1,6 @@
 package assemblyline.common.tile.belt.utils;
 
+import assemblyline.common.block.BlockConveyorBelt;
 import assemblyline.common.settings.Constants;
 import electrodynamics.common.tags.ElectrodynamicsTags;
 import electrodynamics.prefab.properties.Property;
@@ -20,6 +21,7 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -637,7 +639,20 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
                 item.setItem(stack);
 
             }
-        } else if (level.isClientSide() && running.get() && entity instanceof LivingEntity living && living.getOnPos().equals(getBlockPos())) {
+        } else if (running.get() && entity instanceof LivingEntity living && living.getOnPos().equals(getBlockPos())) {
+
+            if(living instanceof Player && !level.isClientSide()) {
+                return;
+            } else if (level.isClientSide) {
+                return;
+            }
+
+            double deltaY = living.getY() - living.getOnPos().getY();
+
+            if(deltaY > BlockConveyorBelt.MAX_Y) {
+                return;
+            }
+
 
             List<ItemStack> armorPieces = new ArrayList<>();
             living.getArmorSlots().forEach(piece -> armorPieces.add(piece));

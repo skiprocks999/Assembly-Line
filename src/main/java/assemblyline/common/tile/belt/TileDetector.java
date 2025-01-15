@@ -1,7 +1,6 @@
 package assemblyline.common.tile.belt;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 import assemblyline.common.tile.belt.utils.GenericTileConveyorBelt;
 import assemblyline.registers.AssemblyLineTiles;
@@ -9,6 +8,8 @@ import electrodynamics.prefab.tile.GenericTile;
 import electrodynamics.prefab.tile.components.type.ComponentTickable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -40,12 +41,9 @@ public class TileDetector extends GenericTile {
 				isPowered = true;
 				level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
 			}
-		} else if (level.getBlockEntity(relative) instanceof GenericTileConveyorBelt belt) {
-			if(!isPowered && !belt.getItemOnBelt().isEmpty()) {
+		} else if (level.getBlockEntity(relative) instanceof GenericTileConveyorBelt belt && !belt.getItemOnBelt().isEmpty()) {
+			if(!isPowered) {
 				isPowered = true;
-				level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
-			} else if (isPowered) {
-				isPowered = false;
 				level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
 			}
 		} else if (isPowered) {
@@ -72,5 +70,17 @@ public class TileDetector extends GenericTile {
 	@Override
 	public int getDirectSignal(Direction dir) {
 		return getSignal(dir);
+	}
+
+	@Override
+	protected void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+		super.saveAdditional(compound, registries);
+		compound.putBoolean("powered", isPowered);
+	}
+
+	@Override
+	protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+		super.loadAdditional(compound, registries);
+		isPowered = compound.getBoolean("powered");
 	}
 }
