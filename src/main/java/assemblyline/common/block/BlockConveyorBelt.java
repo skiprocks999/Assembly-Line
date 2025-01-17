@@ -26,7 +26,9 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class BlockConveyorBelt extends GenericEntityBlockWaterloggable {
-	private static final VoxelShape SHAPE = Shapes.box(0, 0, 0, 1, 5.0 / 16.0, 1);
+
+	public static final double MAX_Y = 5.0 / 16.0;
+	private static final VoxelShape SHAPE = Shapes.box(0, 0, 0, 1, MAX_Y, 1);
 
 	private final VoxelShapeProvider shapeProvider;
 	private final BlockEntityType.BlockEntitySupplier<?> supplier;

@@ -278,7 +278,8 @@ public class RenderConveyorBelt extends AbstractTileRenderer<TileConveyorBelt> {
 
             matrixStackIn.popPose();
 
-        } else if (tile.isPuller.get()) {
+        }
+        if (tile.isPuller.get()) {
 
             matrixStackIn.pushPose();
 
