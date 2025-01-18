@@ -1,5 +1,6 @@
 package assemblyline.common.packet;
 
+import assemblyline.AssemblyLine;
 import assemblyline.References;
 import assemblyline.common.packet.types.server.PacketFarmer;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +24,6 @@ public class NetworkHandler {
 	}
 
 	public static ResourceLocation id(String name) {
-		return ResourceLocation.fromNamespaceAndPath(References.ID, name);
+		return AssemblyLine.rl(name);
 	}
 }

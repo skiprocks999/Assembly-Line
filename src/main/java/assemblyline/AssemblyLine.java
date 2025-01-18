@@ -5,6 +5,7 @@ import assemblyline.common.block.AssemblyLineVoxelShapes;
 import assemblyline.common.settings.Constants;
 import assemblyline.registers.UnifiedAssemblyLineRegister;
 import electrodynamics.prefab.configuration.ConfigurationHandler;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
@@ -35,6 +36,10 @@ public class AssemblyLine {
 		event.enqueueWork(() -> {
 			ClientRegister.setup();
 		});
+	}
+
+	public static final ResourceLocation rl(String path) {
+		return ResourceLocation.fromNamespaceAndPath(References.ID, path);
 	}
 
 }
