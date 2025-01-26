@@ -1,5 +1,6 @@
 package assemblyline.client;
 
+import assemblyline.AssemblyLine;
 import assemblyline.References;
 import assemblyline.client.guidebook.ModuleAssemblyLine;
 import assemblyline.client.render.tile.*;
@@ -8,7 +9,6 @@ import assemblyline.registers.AssemblyLineTiles;
 import assemblyline.registers.AssemblyLineMenuTypes;
 import electrodynamics.client.guidebook.ScreenGuidebook;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -21,39 +21,39 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 @EventBusSubscriber(modid = References.ID, bus = EventBusSubscriber.Bus.MOD, value = {Dist.CLIENT})
 public class ClientRegister {
 
-    public static final ModelResourceLocation MODEL_CONVEYOR = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbelt"));
-    public static final ModelResourceLocation MODEL_CONVEYORCLEAR = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltclear"));
-    public static final ModelResourceLocation MODEL_CONVEYORRIGHTCLEAR = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltrightclear"));
-    public static final ModelResourceLocation MODEL_CONVEYORLEFTCLEAR = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltleftclear"));
-    public static final ModelResourceLocation MODEL_CONVEYORANIMATED = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltrunning"));
-    public static final ModelResourceLocation MODEL_CONVEYORANIMATEDCLEAR = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltrunningclear"));
-    public static final ModelResourceLocation MODEL_CONVEYORANIMATEDRIGHTCLEAR = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltrunningrightclear"));
-    public static final ModelResourceLocation MODEL_CONVEYORANIMATEDLEFTCLEAR = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltrunningleftclear"));
-    public static final ModelResourceLocation MODEL_SLOPEDCONVEYOR = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltsloped"));
-    public static final ModelResourceLocation MODEL_SLOPEDCONVEYORANIMATED = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltslopedrunning"));
-    public static final ModelResourceLocation MODEL_SLOPEDCONVEYORUP = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltslopedup"));
-    public static final ModelResourceLocation MODEL_SLOPEDCONVEYORUPANIMATED = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltslopeduprunning"));
-    public static final ModelResourceLocation MODEL_SLOPEDCONVEYORDOWN = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltslopeddown"));
-    public static final ModelResourceLocation MODEL_SLOPEDCONVEYORDOWNANIMATED = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/conveyorbeltslopeddownrunning"));
-    public static final ModelResourceLocation MODEL_MANIPULATORINPUT = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/manipulatorinput"));
-    public static final ModelResourceLocation MODEL_MANIPULATORINPUTRUNNING = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/manipulatorinputrunning"));
-    public static final ModelResourceLocation MODEL_MANIPULATOROUTPUT = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/manipulatoroutput"));
-    public static final ModelResourceLocation MODEL_MANIPULATOROUTPUTRUNNING = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/manipulatoroutputrunning"));
-    public static final ModelResourceLocation MODEL_ELEVATOR = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/elevatorbelt"));
-    public static final ModelResourceLocation MODEL_ELEVATORRUNNING = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/elevatorbeltrunning"));
-    public static final ModelResourceLocation MODEL_ELEVATORBOTTOM = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/elevatorbeltbottom"));
-    public static final ModelResourceLocation MODEL_ELEVATORBOTTOMRUNNING = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/elevatorbeltbottomrunning"));
-    public static final ModelResourceLocation MODEL_MANIPULATOR = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/manipulator"));
+    public static final ModelResourceLocation MODEL_CONVEYOR = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbelt"));
+    public static final ModelResourceLocation MODEL_CONVEYORCLEAR = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltclear"));
+    public static final ModelResourceLocation MODEL_CONVEYORRIGHTCLEAR = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltrightclear"));
+    public static final ModelResourceLocation MODEL_CONVEYORLEFTCLEAR = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltleftclear"));
+    public static final ModelResourceLocation MODEL_CONVEYORANIMATED = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltrunning"));
+    public static final ModelResourceLocation MODEL_CONVEYORANIMATEDCLEAR = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltrunningclear"));
+    public static final ModelResourceLocation MODEL_CONVEYORANIMATEDRIGHTCLEAR = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltrunningrightclear"));
+    public static final ModelResourceLocation MODEL_CONVEYORANIMATEDLEFTCLEAR = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltrunningleftclear"));
+    public static final ModelResourceLocation MODEL_SLOPEDCONVEYOR = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltsloped"));
+    public static final ModelResourceLocation MODEL_SLOPEDCONVEYORANIMATED = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltslopedrunning"));
+    public static final ModelResourceLocation MODEL_SLOPEDCONVEYORUP = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltslopedup"));
+    public static final ModelResourceLocation MODEL_SLOPEDCONVEYORUPANIMATED = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltslopeduprunning"));
+    public static final ModelResourceLocation MODEL_SLOPEDCONVEYORDOWN = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltslopeddown"));
+    public static final ModelResourceLocation MODEL_SLOPEDCONVEYORDOWNANIMATED = ModelResourceLocation.standalone(AssemblyLine.rl("block/conveyorbeltslopeddownrunning"));
+    public static final ModelResourceLocation MODEL_MANIPULATORINPUT = ModelResourceLocation.standalone(AssemblyLine.rl("block/manipulatorinput"));
+    public static final ModelResourceLocation MODEL_MANIPULATORINPUTRUNNING = ModelResourceLocation.standalone(AssemblyLine.rl("block/manipulatorinputrunning"));
+    public static final ModelResourceLocation MODEL_MANIPULATOROUTPUT = ModelResourceLocation.standalone(AssemblyLine.rl("block/manipulatoroutput"));
+    public static final ModelResourceLocation MODEL_MANIPULATOROUTPUTRUNNING = ModelResourceLocation.standalone(AssemblyLine.rl("block/manipulatoroutputrunning"));
+    public static final ModelResourceLocation MODEL_ELEVATOR = ModelResourceLocation.standalone(AssemblyLine.rl("block/elevatorbelt"));
+    public static final ModelResourceLocation MODEL_ELEVATORRUNNING = ModelResourceLocation.standalone(AssemblyLine.rl("block/elevatorbeltrunning"));
+    public static final ModelResourceLocation MODEL_ELEVATORBOTTOM = ModelResourceLocation.standalone(AssemblyLine.rl("block/elevatorbeltbottom"));
+    public static final ModelResourceLocation MODEL_ELEVATORBOTTOMRUNNING = ModelResourceLocation.standalone(AssemblyLine.rl("block/elevatorbeltbottomrunning"));
+    public static final ModelResourceLocation MODEL_MANIPULATOR = ModelResourceLocation.standalone(AssemblyLine.rl("block/manipulator"));
 
 
-    public static final ModelResourceLocation MODEL_SORTERBELT = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/sorterbelt"));
-    public static final ModelResourceLocation MODEL_SORTERBELT_RUNNING = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/sorterbeltrunning"));
+    public static final ModelResourceLocation MODEL_SORTERBELT = ModelResourceLocation.standalone(AssemblyLine.rl("block/sorterbelt"));
+    public static final ModelResourceLocation MODEL_SORTERBELT_RUNNING = ModelResourceLocation.standalone(AssemblyLine.rl("block/sorterbeltrunning"));
 
-    public static final ModelResourceLocation MODEL_BLOCKBREAKERWHEEL = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/blockbreakerwheel"));
-    public static final ModelResourceLocation MODEL_MOBGRINDERSIDEWHEEL = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/mobgrindersidewheel"));
-    public static final ModelResourceLocation MODEL_MOBGRINDERCENTERWHEEL = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/mobgrindercenterwheel"));
-    public static final ModelResourceLocation MODEL_RANCHERLEFT = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/rancherleft"));
-    public static final ModelResourceLocation MODEL_RANCHERRIGHT = ModelResourceLocation.standalone(ResourceLocation.parse(References.ID + ":block/rancherright"));
+    public static final ModelResourceLocation MODEL_BLOCKBREAKERWHEEL = ModelResourceLocation.standalone(AssemblyLine.rl("block/blockbreakerwheel"));
+    public static final ModelResourceLocation MODEL_MOBGRINDERSIDEWHEEL = ModelResourceLocation.standalone(AssemblyLine.rl("block/mobgrindersidewheel"));
+    public static final ModelResourceLocation MODEL_MOBGRINDERCENTERWHEEL = ModelResourceLocation.standalone(AssemblyLine.rl("block/mobgrindercenterwheel"));
+    public static final ModelResourceLocation MODEL_RANCHERLEFT = ModelResourceLocation.standalone(AssemblyLine.rl("block/rancherleft"));
+    public static final ModelResourceLocation MODEL_RANCHERRIGHT = ModelResourceLocation.standalone(AssemblyLine.rl("block/rancherright"));
 
     public static void setup() {
         ClientEvents.init();
