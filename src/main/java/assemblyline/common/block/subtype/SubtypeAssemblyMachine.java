@@ -37,46 +37,57 @@ public enum SubtypeAssemblyMachine implements ISubtype, IMachine {
         this.properties = properties;
     }
 
+    @Override
     public BlockEntityType.BlockEntitySupplier<BlockEntity> getBlockEntitySupplier() {
         return this.blockEntitySupplier;
     }
 
+    @Override
     public int getLitBrightness() {
         return this.properties.litBrightness;
     }
 
+    @Override
     public RenderShape getRenderShape() {
         return this.properties.renderShape;
     }
 
+    @Override
     public boolean isMultiblock() {
         return this.properties.isMultiblock;
     }
 
+    @Override
     public boolean propegatesLightDown() {
         return this.properties.propegatesLightDown;
     }
 
+    @Override
     public String tag() {
         return this.name();
     }
 
+    @Override
     public String forgeTag() {
         return this.tag();
     }
 
+    @Override
     public boolean isItem() {
         return false;
     }
 
+    @Override
     public boolean isPlayerStorable() {
         return false;
     }
 
+    @Override
     public IMultiblockParentBlock.SubnodeWrapper getSubnodes() {
         return this.properties.wrapper;
     }
 
+    @Override
     public VoxelShapeProvider getVoxelShapeProvider() {
         return this.properties.provider;
     }

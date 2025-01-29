@@ -3,7 +3,6 @@ package assemblyline.common.block;
 import java.util.Arrays;
 import java.util.List;
 
-import assemblyline.common.tile.belt.TileConveyorBelt;
 import assemblyline.common.tile.belt.utils.GenericTileConveyorBelt;
 import com.mojang.serialization.MapCodec;
 import electrodynamics.common.block.states.ElectrodynamicsBlockStates;

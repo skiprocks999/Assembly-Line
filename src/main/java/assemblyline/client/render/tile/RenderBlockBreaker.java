@@ -19,7 +19,6 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class RenderBlockBreaker extends AbstractTileRenderer<TileBlockBreaker> {

@@ -609,8 +609,8 @@ public abstract class GenericTileConveyorBelt extends GenericTile {
         if (setToEnd) {
             Direction directionForNext = getDirectionForNext();
 
-            x -= ((double) directionForNext.getStepX() / 2.0);
-            z -= ((double) directionForNext.getStepZ() / 2.0);
+            x -= (directionForNext.getStepX() / 2.0);
+            z -= (directionForNext.getStepZ() / 2.0);
         }
 
         return new Location(x, y, z);
